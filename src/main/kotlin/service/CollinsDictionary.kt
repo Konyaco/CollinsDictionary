@@ -1,10 +1,10 @@
+package service
+
 import org.jsoup.Jsoup
 import java.net.URL
 
-class CollinsDictionary {
-    fun getDefinition(word: String): Word? {
-        return CollinsDictionHTMLParser.getDefinition(word)
-    }
+interface CollinsDictionary {
+    fun getDefinition(word: String): Word?
 }
 
 data class Word(
@@ -43,10 +43,18 @@ data class ExampleSentence(
     val synonyms: List<String>
 )
 
-private object CollinsDictionHTMLParser {
-    fun getDefinition(word: String): Word? {
-        val html = getHtml(word)
+class CollinsOnlineDictionary : CollinsDictionary {
+    override fun getDefinition(word: String): Word? {
+        return CollinsDictionaryHTMLParser.parse(getHtml(word))
+    }
 
+    private fun getHtml(word: String): String {
+        return URL("https://www.collinsdictionary.com/dictionary/english/$word").readText()
+    }
+}
+
+private object CollinsDictionaryHTMLParser {
+    fun parse(html: String): Word? {
         val jsoup = Jsoup.parse(html)
         val mainContent = jsoup.getElementById("main_content")
         val dictionaryElement = mainContent.getElementsByClass("dictionary Cob_Adv_Brit dictentry").first()
@@ -108,9 +116,5 @@ private object CollinsDictionHTMLParser {
             pronunciation = pronunciation,
             definitionEntries = definitionEntries
         )
-    }
-
-    private fun getHtml(word: String): String {
-        return URL("https://www.collinsdictionary.com/dictionary/english/$word").readText()
     }
 }
