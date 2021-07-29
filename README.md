@@ -1,7 +1,6 @@
 # Collins Dictionary
 
-This is a collins dictionary get word definition by parsing [Collins Online Dictionary](collinsdcionary.com) html
-website.
+This is a collins dictionary client, getting word definition by parsing [Collins Online Dictionary](collinsdcionary.com) website.
 
 GUI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
 
