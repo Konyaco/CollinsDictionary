@@ -40,7 +40,6 @@ compose.desktop {
             packageName = "CollinsDictionary"
             vendor = "Konyaco"
             windows {
-//                iconFile.set(file("src/main/resources/icon.ico"))
                 perUserInstall = true
                 shortcut = true
                 upgradeUuid = "1869b274-ab91-48de-9ff4-b6e9baacf00b"
