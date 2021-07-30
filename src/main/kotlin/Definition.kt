@@ -1,5 +1,6 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,72 +16,74 @@ import service.*
 
 @Composable
 fun Definition(definition: Word, modifier: Modifier = Modifier) {
-    Column(modifier) {
-        Row {
-            Text(
-                modifier = Modifier.alignByBaseline(),
-                text = definition.word,
-                fontFamily = FontFamily.Serif,
-                fontSize = 48.sp
-            )
-            Spacer(Modifier.width(16.dp))
-            Text(
-                modifier = Modifier.alignByBaseline(),
-                text = "/" + definition.pronunciation.ipa + "/", fontStyle = FontStyle.Italic, fontSize = 14.sp
-            )
-            // TODO: 2021/7/30 Sound
-        }
-        // Word Forms
-        Row {
-            Text("Word forms: ")
-            Column {
-                definition.forms.forEach {
-                    Text(buildAnnotatedString {
-                        append(it.description)
-                        append(": ")
-                        pushStyle(
-                            SpanStyle(
-                                color = Color.Gray,
-                                fontFamily = FontFamily.Serif,
-                                fontStyle = FontStyle.Italic
-                            )
-                        )
-                        append(it.spell)
-                        pop()
-                    })
-                }
-            }
-        }
-        Spacer(Modifier.height(24.dp))
-        // Definitions
-        definition.definitionEntries.forEach { entry ->
+    SelectionContainer {
+        Column(modifier) {
             Row {
-                Text("${entry.index}.")
-                Spacer(Modifier.width(8.dp))
-                Text(entry.type)
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = definition.word,
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 48.sp
+                )
+                Spacer(Modifier.width(16.dp))
+                Text(
+                    modifier = Modifier.alignByBaseline(),
+                    text = "/" + definition.pronunciation.ipa + "/", fontStyle = FontStyle.Italic, fontSize = 14.sp
+                )
+                // TODO: 2021/7/30 Sound
             }
-            Spacer(Modifier.height(8.dp))
-
-            Column(Modifier.padding(start = 24.dp).widthIn(max = with(LocalDensity.current) {
-                // https://material.io/design/typography/understanding-typography.html#readability
-                // According to Material Guidance, 40 - 60 characters width is the best.
-                (16.sp * 50).toDp()
-            })) {
-                Text(text = entry.definition.def, fontSize = 16.sp)
-                // Example Sentences
-                Spacer(Modifier.height(12.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    entry.definition.examples.forEach { example ->
-                        Text(
-                            text = example.sentence,
-                            fontSize = 16.sp,
-                            fontStyle = FontStyle.Italic,
-                            fontFamily = FontFamily.Serif
-                        )
+            // Word Forms
+            Row {
+                Text("Word forms: ")
+                Column {
+                    definition.forms.forEach {
+                        Text(buildAnnotatedString {
+                            append(it.description)
+                            append(": ")
+                            pushStyle(
+                                SpanStyle(
+                                    color = Color.Gray,
+                                    fontFamily = FontFamily.Serif,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            )
+                            append(it.spell)
+                            pop()
+                        })
                     }
                 }
             }
             Spacer(Modifier.height(24.dp))
+            // Definitions
+            definition.definitionEntries.forEach { entry ->
+                Row {
+                    Text("${entry.index}.")
+                    Spacer(Modifier.width(8.dp))
+                    Text(entry.type)
+                }
+                Spacer(Modifier.height(8.dp))
+
+                Column(Modifier.padding(start = 24.dp).widthIn(max = with(LocalDensity.current) {
+                    // https://material.io/design/typography/understanding-typography.html#readability
+                    // According to Material Guidance, 40 - 60 characters width is the best.
+                    (16.sp * 50).toDp()
+                })) {
+                    Text(text = entry.definition.def, fontSize = 16.sp)
+                    // Example Sentences
+                    Spacer(Modifier.height(12.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        entry.definition.examples.forEach { example ->
+                            Text(
+                                text = example.sentence,
+                                fontSize = 16.sp,
+                                fontStyle = FontStyle.Italic,
+                                fontFamily = FontFamily.Serif
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+            }
         }
     }
 }
