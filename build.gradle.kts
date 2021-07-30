@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "me.konyaco.collinsdictionary"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -36,7 +36,7 @@ compose.desktop {
         javaHome = System.getenv("JDK_15")
         mainClass = "MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
+            targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "CollinsDictionary"
             vendor = "Konyaco"
             windows {

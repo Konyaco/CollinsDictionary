@@ -33,23 +33,28 @@ fun Definition(definition: Word, modifier: Modifier = Modifier) {
                 // TODO: 2021/7/30 Sound
             }
             // Word Forms
-            Row {
-                Text("Word forms: ")
-                Column {
-                    definition.forms.forEach {
-                        Text(buildAnnotatedString {
-                            append(it.description)
-                            append(": ")
-                            pushStyle(
-                                SpanStyle(
-                                    color = Color.Gray,
-                                    fontFamily = FontFamily.Serif,
-                                    fontStyle = FontStyle.Italic
+            definition.forms?.let { forms ->
+                Spacer(Modifier.height(16.dp))
+                Row {
+                    Text("Word forms: ", modifier = Modifier.alignByBaseline())
+                    Column(modifier = Modifier.alignByBaseline()) {
+                        forms.forEach {
+                            Text(buildAnnotatedString {
+                                pushStyle(SpanStyle(fontFamily = FontFamily.Serif))
+                                append(it.description)
+                                append(": ")
+                                pop()
+                                pushStyle(
+                                    SpanStyle(
+                                        color = Color.Gray,
+                                        fontFamily = FontFamily.Serif,
+                                        fontStyle = FontStyle.Italic
+                                    )
                                 )
-                            )
-                            append(it.spell)
-                            pop()
-                        })
+                                append(it.spell)
+                                pop()
+                            })
+                        }
                     }
                 }
             }

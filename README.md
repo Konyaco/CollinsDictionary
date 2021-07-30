@@ -1,13 +1,17 @@
 # Collins Dictionary
 
-This is a collins dictionary client, getting word definition by parsing [Collins Online Dictionary](collinsdcionary.com) website.
+This is a Collins Dictionary client, GUI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
 
-GUI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
-
-> **Warning:** There is no license from Collins organization. This repository is for learning purposes only. Commercial use is prohibited.
+> **Warning:** This program gets word definitions by parsing [Collins Online Dictionary](https://www.collinsdcionary.com) website.
+> There is no license from Collins organization. This repository is for learning purposes only. Commercial use is prohibited.
 
 ## Screenshots
 
 ![Screenshot](assets/screenshot1.png)
 
 ![Screenshot](assets/screenshot2.png)
+
+## TODO
+
+- [ ] Support for multiple tab, each tab represents a word, just like a browser.
+- [ ] Every word in the definition is selectable, use middle mouse button to open a new tab.

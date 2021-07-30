@@ -42,7 +42,7 @@ fun wordDataToString(definition: Word): String {
     |=============
     |${definition.word} /${definition.pronunciation.ipa}/
     |${
-        definition.forms.takeIf { it.isNotEmpty() }?.let {
+        definition.forms?.takeIf { it.isNotEmpty() }?.let {
             "[Forms] " + it.joinToString(".") {
                 "${it.description}: ${it.spell}"
             }
