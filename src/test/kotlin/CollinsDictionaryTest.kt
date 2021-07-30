@@ -4,6 +4,6 @@ import service.CollinsOnlineDictionary
 internal class CollinsDictionaryTest {
     @Test
     fun test() {
-        println(CollinsOnlineDictionary().getDefinition("welcome"))
+        println(CollinsOnlineDictionary().getDefinition("take"))
     }
 }

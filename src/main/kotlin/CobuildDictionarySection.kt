@@ -15,25 +15,26 @@ import androidx.compose.ui.unit.sp
 import service.*
 
 @Composable
-fun Definition(definition: Word, modifier: Modifier = Modifier) {
+fun CobuildDictionarySection(section: CobuildDictionarySection, modifier: Modifier = Modifier) {
     SelectionContainer {
         Column(modifier) {
+            // Word and IPA
             Row {
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = definition.word,
+                    text = section.word,
                     fontFamily = FontFamily.Serif,
                     fontSize = 48.sp
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = "/" + definition.pronunciation.ipa + "/", fontStyle = FontStyle.Italic, fontSize = 14.sp
+                    text = "/" + section.pronunciation.ipa + "/", fontStyle = FontStyle.Italic, fontSize = 14.sp
                 )
                 // TODO: 2021/7/30 Sound
             }
             // Word Forms
-            definition.forms?.let { forms ->
+            section.forms?.let { forms ->
                 Spacer(Modifier.height(16.dp))
                 Row {
                     Text("Word forms: ", modifier = Modifier.alignByBaseline())
@@ -60,7 +61,7 @@ fun Definition(definition: Word, modifier: Modifier = Modifier) {
             }
             Spacer(Modifier.height(24.dp))
             // Definitions
-            definition.definitionEntries.forEach { entry ->
+            section.definitionEntries.forEach { entry ->
                 Row {
                     Text("${entry.index}.")
                     Spacer(Modifier.width(8.dp))
@@ -97,8 +98,8 @@ fun Definition(definition: Word, modifier: Modifier = Modifier) {
 @Composable
 private fun Preview() {
     MyTheme {
-        Definition(
-            Word(
+        CobuildDictionarySection(
+            CobuildDictionarySection(
                 word = "example",
                 forms = listOf(WordForm("plural", "examples")),
                 pronunciation = Pronunciation("ɪgzɑːmpəl", null),

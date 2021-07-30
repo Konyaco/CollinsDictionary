@@ -41,15 +41,8 @@ fun App(component: AppComponent) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                AnimatedVisibility(
-                    queryState is AppComponent.State.None
-                ) {
-                    Text(
-                        text = "Collins Online\nDictionary",
-                        fontSize = 72.sp,
-                        fontFamily = FontFamily.Serif,
-                        textAlign = TextAlign.Center
-                    )
+                AnimatedVisibility(queryState is AppComponent.State.None) {
+                    Title()
                 }
                 Spacer(Modifier.height(32.dp))
                 var input by remember { mutableStateOf("") }
@@ -79,8 +72,16 @@ fun App(component: AppComponent) {
                         is AppComponent.State.Succeed -> {
                             Box(Modifier.fillMaxWidth()) {
                                 val scrollState = rememberScrollState()
-                                Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState)) {
-                                    Definition(state.data, Modifier.fillMaxWidth().padding(horizontal = 48.dp))
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    state.data.cobuildDictionary.sections.forEach { section ->
+                                        CobuildDictionarySection(
+                                            section,
+                                            Modifier.fillMaxWidth().padding(horizontal = 48.dp)
+                                        )
+                                    }
                                 }
                                 VerticalScrollbar(
                                     adapter = rememberScrollbarAdapter(scrollState),
@@ -97,13 +98,23 @@ fun App(component: AppComponent) {
                             }
                         }
                         AppComponent.State.WordNotFound -> {
-                            Text("service.Word not found")
+                            Text("Word not found")
                         }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun Title() {
+    Text(
+        text = "Collins Online\nDictionary",
+        fontSize = 72.sp,
+        fontFamily = FontFamily.Serif,
+        textAlign = TextAlign.Center
+    )
 }
 
 

@@ -1,5 +1,5 @@
+import service.CobuildDictionarySection
 import service.CollinsOnlineDictionary
-import service.Word
 
 fun cli() {
     val collinsDictionary = CollinsOnlineDictionary()
@@ -10,7 +10,7 @@ fun cli() {
         val definition = collinsDictionary.getDefinition(word)
 
         if (definition == null) {
-            println("service.Word not found")
+            println("Word not found")
             continue
         }
 
@@ -33,11 +33,11 @@ fun cli() {
         =============
         */
 
-        println(wordDataToString(definition))
+        println(wordDataToString(definition.cobuildDictionary.sections.first()))
     }
 }
 
-fun wordDataToString(definition: Word): String {
+fun wordDataToString(definition: CobuildDictionarySection): String {
     return """
     |=============
     |${definition.word} /${definition.pronunciation.ipa}/
