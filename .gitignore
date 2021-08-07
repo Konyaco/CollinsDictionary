@@ -2,6 +2,6 @@
 /.gradle/
 /.idea/
 /build/
-/common/build
-/android/build
-/desktop/build
+/common/build/
+/android/build/
+/desktop/build/
