@@ -17,4 +17,4 @@ This is a Collins Dictionary client, GUI is built on [Jetbrains Compose](https:/
 
 - [ ] Support for multiple tab, each tab represents a word, just like a browser.
 - [ ] Every word in the definition is selectable, use middle mouse button to open a new tab.
-- [ ] Support for Android.
+- [x] Support for Android.

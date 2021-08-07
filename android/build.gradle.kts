@@ -11,12 +11,12 @@ android {
         minSdk = 21
         targetSdk = 31
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1.0"
     }
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
         }
     }
 
