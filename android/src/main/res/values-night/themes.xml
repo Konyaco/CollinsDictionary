@@ -2,7 +2,6 @@
     <style name="Theme.CollinsDictionary" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:colorPrimary">#E57373</item>
         <item name="android:colorPrimaryDark">#E57373</item>
-        <item name="android:background">#212121</item>
         <item name="android:statusBarColor">#212121</item>
         <item name="android:navigationBarColor">#212121</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
