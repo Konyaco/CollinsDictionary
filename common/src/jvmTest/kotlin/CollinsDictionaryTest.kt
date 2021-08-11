@@ -6,4 +6,9 @@ internal class CollinsDictionaryTest {
     fun test() {
         println(CollinsOnlineDictionary().getDefinition("take"))
     }
+
+    @Test
+    fun testWordNotFound() {
+        assert(CollinsOnlineDictionary().getDefinition("wfnigjei") == null)
+    }
 }

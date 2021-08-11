@@ -15,6 +15,8 @@ kotlin {
                 api(compose.foundation)
                 api(compose.animation)
                 api(compose.material)
+                api(compose.preview)
+                api(compose.uiTooling)
                 api(compose.materialIconsExtended)
             }
         }
@@ -27,6 +29,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                api(compose.desktop.currentOs)
                 implementation("org.jsoup:jsoup:1.11.3")
             }
         }
@@ -38,11 +41,15 @@ kotlin {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 android {
-    compileSdkVersion(31)
+    compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(31)
+        minSdk = 21
+        targetSdk = 31
     }
 }

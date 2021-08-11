@@ -4,6 +4,7 @@ package me.konyaco.collinsdictionary.service
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 actual class CollinsOnlineDictionary : CollinsDictionary {
     override fun getDefinition(word: String): Word? {
@@ -11,20 +12,28 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
     }
 
     private fun getHtml(word: String): String {
-        return URL("https://www.collinsdictionary.com/dictionary/english/$word").readText()
+        val url = URL("https://www.collinsdictionary.com/dictionary/english/$word")
+
+        val conn = (url.openConnection() as HttpsURLConnection).apply {
+            instanceFollowRedirects = false
+            connect()
+        }
+        return conn.inputStream.bufferedReader().readText()
     }
 }
 
 private object CollinsDictionaryHTMLParser {
     fun parse(html: String): Word? {
         val jsoup = Jsoup.parse(html)
-        val mainContentElement = jsoup.getElementById("main_content") ?: return null // Word not found
+        val mainContentElement =
+            jsoup.getElementById("main_content") ?: return null // Word not found
 
         return Word(parseCobuildDictionary(mainContentElement))
     }
 
     fun parseCobuildDictionary(mainContentElement: Element): CobuildDictionary {
-        val cobuildElement = mainContentElement.getElementsByClass("dictionary Cob_Adv_Brit dictentry").firstOrNull()
+        val cobuildElement =
+            mainContentElement.getElementsByClass("dictionary Cob_Adv_Brit dictentry").firstOrNull()
 
         return if (cobuildElement != null) {
             CobuildDictionary(listOf(parseSection(cobuildElement)))
@@ -99,9 +108,11 @@ private class DefinitionParser {
                 ?: error("Cannot find word definitions")
 
         definitionElement.getElementsByClass("hom").forEachIndexed { index, element ->
-            val grammarGroup: String = element.getElementsByClass("gramGrp pos").firstOrNull()?.text()
-                ?: element.getElementsByClass("gramGrp").firstOrNull()?.getElementsByClass("pos")?.text()
-                ?: return@forEachIndexed // Maybe it's not a definition, just skip
+            val grammarGroup: String =
+                element.getElementsByClass("gramGrp pos").firstOrNull()?.text()
+                    ?: element.getElementsByClass("gramGrp").firstOrNull()
+                        ?.getElementsByClass("pos")?.text()
+                    ?: return@forEachIndexed // Maybe it's not a definition, just skip
 //                    ?: error("Cannot find grammar group in entry $index")
 
             val senseElement = element.getElementsByClass("sense").first()
@@ -110,7 +121,12 @@ private class DefinitionParser {
 
             val examples = senseElement.getElementsByClass("cit type-example").map {
                 val sentence = it.getElementsByClass("quote").first().text()
-                ExampleSentence(sentence, null, null, emptyList()) // TODO: 2021/7/28 Grammar pattern and sound url.
+                ExampleSentence(
+                    sentence,
+                    null,
+                    null,
+                    emptyList()
+                ) // TODO: 2021/7/28 Grammar pattern and sound url.
             }
 
             definitionEntries.add(

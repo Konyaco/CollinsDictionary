@@ -1,14 +1,14 @@
 package me.konyaco.collinsdictionary
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.remember
+import androidx.appcompat.app.AppCompatActivity
+import me.konyaco.collinsdictionary.ui.App
+import me.konyaco.collinsdictionary.ui.AppViewModel
+import me.konyaco.collinsdictionary.ui.MyTheme
 
 class MainActivity : AppCompatActivity() {
-    private val component by lazy { AppComponent() }
+    private val component by lazy { AppViewModel() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
