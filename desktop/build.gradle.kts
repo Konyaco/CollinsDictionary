@@ -39,10 +39,12 @@ compose.desktop {
                 upgradeUuid = "1869b274-ab91-48de-9ff4-b6e9baacf00b"
                 menu = true
                 menuGroup = "Konyaco"
+                iconFile.set(file("icon.ico"))
             }
             linux {
                 shortcut = true
                 menuGroup = "Konyaco"
+                iconFile.set(file("icon.png"))
             }
         }
     }
