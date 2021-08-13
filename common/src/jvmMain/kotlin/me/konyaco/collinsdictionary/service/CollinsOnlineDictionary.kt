@@ -3,6 +3,7 @@ package me.konyaco.collinsdictionary.service
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.net.URL
+import java.util.*
 import javax.net.ssl.HttpsURLConnection
 
 actual class CollinsOnlineDictionary : CollinsDictionary {
@@ -79,13 +80,23 @@ private class WordFormParser {
     fun parse(dictionaryElement: Element): List<WordForm>? {
         val formElement = dictionaryElement.getElementsByClass("form inflected_forms type-infl")
             .firstOrNull() ?: return null
-
-        val descriptions = formElement.getElementsByClass("lbl type-gram").map { it.text() }
-        val spells = formElement.getElementsByClass("orth").map { it.text() }
-
-        return descriptions.zip(spells) { desc, spell ->
-            WordForm(desc, spell)
+        val result = mutableListOf<WordForm>()
+        val types = LinkedList<String>()
+        for (e in formElement.children()) {
+            if (e.classNames().contains("type-gram")) {
+                val type = e.ownText()
+                // Grammar type
+                types.push(type)
+            } else if (e.classNames().contains("orth")) {
+                // Spell
+                val spell = e.ownText()
+                types.forEach { type ->
+                    result.add(WordForm(type, spell))
+                }
+                types.clear()
+            }
         }
+        return result
     }
 }
 
