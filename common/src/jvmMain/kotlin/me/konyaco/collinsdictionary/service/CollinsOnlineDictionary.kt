@@ -91,10 +91,13 @@ private class WordFormParser {
 
 private class PronunciationParser {
     fun parse(dictionaryElement: Element): Pronunciation {
-        val pron = dictionaryElement.getElementsByClass("pron type-").firstOrNull()?.text()
+        val pronElement = dictionaryElement.getElementsByClass("pron type-").firstOrNull()
             ?: error("Cannot find word pronunciation")
-        // TODO: 2021/7/30 Parse sound url
-        return Pronunciation(pron, null)
+        val pronStr = pronElement.text()
+        val soundElement = pronElement.getElementsByAttribute("data-src-mp3").firstOrNull()
+            ?: error("Cannot find sound element")
+        val sound = soundElement.attributes()["data-src-mp3"] ?: error("Cannot find sound url")
+        return Pronunciation(pronStr, sound)
     }
 }
 

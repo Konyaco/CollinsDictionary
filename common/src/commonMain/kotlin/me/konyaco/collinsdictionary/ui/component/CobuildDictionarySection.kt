@@ -1,35 +1,60 @@
 package me.konyaco.collinsdictionary.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.AlignmentLine
-import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.konyaco.collinsdictionary.service.CobuildDictionarySection
 import me.konyaco.collinsdictionary.service.DefinitionEntry
 import me.konyaco.collinsdictionary.service.WordForm
+import me.konyaco.collinsdictionary.service.soundPlayer
 import me.konyaco.collinsdictionary.ui.MyRes
 import me.konyaco.collinsdictionary.ui.SourceSerifProFontFamily
 
 @Composable
-fun CobuildDictionarySection(section: CobuildDictionarySection, modifier: Modifier = Modifier) {
+fun CobuildDictionarySection(
+    section: CobuildDictionarySection,
+    modifier: Modifier = Modifier
+) {
     SelectionContainer {
         Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            WordInfo(section.word, section.pronunciation.ipa, false, onSoundClick = {
-                // TODO: 2021/8/11
-            })
+            val soundPlayer = soundPlayer
+            var soundPlaying by remember { mutableStateOf(false) }
+            var error by remember { mutableStateOf(false) }
+
+            if (section.pronunciation.soundUrl != null) WordInfoWithSound(
+                word = section.word,
+                ipa = section.pronunciation.ipa,
+                soundPlaying = soundPlaying,
+                soundPlayError = error,
+                onSoundClick = {
+                    soundPlayer.play(
+                        url = section.pronunciation.soundUrl,
+                        onStart = {
+                            soundPlaying = true
+                            error = false
+                        },
+                        onStop = { soundPlaying = false },
+                        onError = {
+                            println(it)
+                            soundPlaying = false
+                            error = true
+                        }
+                    )
+                }
+            ) else WordInfo(section.word, section.pronunciation.ipa)
             // Word Forms
             section.forms?.let { WordForms(it, Modifier.fillMaxWidth()) }
             // Definitions
@@ -48,15 +73,16 @@ private fun Divider(label: String) {
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
             lineHeight = 16.sp
-        ) // TODO: Font: Roboto
+        )
     }
 }
 
 @Composable
-private fun WordInfo(
+private fun WordInfoWithSound(
     word: String,
     ipa: String,
-    soundPlaying: Boolean,
+    soundPlaying: Boolean, // TODO: 2021/8/13
+    soundPlayError: Boolean,
     onSoundClick: () -> Unit
 ) {
     // Word and IPA
@@ -69,6 +95,11 @@ private fun WordInfo(
             fontWeight = FontWeight.SemiBold
         )
         Row(
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onSoundClick
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -78,7 +109,7 @@ private fun WordInfo(
                 color = MaterialTheme.colors.onBackground.copy(0.54f),
                 lineHeight = 28.sp
             )
-            // TODO: 2021/7/30 Sound
+            // Sound playing animation
             Icon(
                 modifier = Modifier.offset(y = 1.dp), // To visually align to horizon
                 painter = MyRes.Sound,
@@ -86,6 +117,29 @@ private fun WordInfo(
                 tint = MaterialTheme.colors.primary
             )
         }
+    }
+}
+
+@Composable
+private fun WordInfo(
+    word: String,
+    ipa: String
+) {
+    // Word and IPA
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = word,
+            fontFamily = SourceSerifProFontFamily,
+            fontSize = 34.sp,
+            lineHeight = 48.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "/$ipa/",
+            fontSize = 24.sp,
+            color = MaterialTheme.colors.onBackground.copy(0.54f),
+            lineHeight = 28.sp
+        )
     }
 }
 

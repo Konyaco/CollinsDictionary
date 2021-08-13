@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -91,8 +90,8 @@ fun App(viewModel: AppViewModel) {
                                 Spacer(Modifier.height(4.dp))
                                 state.data.cobuildDictionary.sections.forEach { section ->
                                     CobuildDictionarySection(
-                                        section,
-                                        Modifier.fillMaxWidth().padding(horizontal = padding)
+                                        section = section,
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = padding)
                                     )
                                 }
                             }
