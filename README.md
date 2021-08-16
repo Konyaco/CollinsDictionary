@@ -13,18 +13,15 @@ UI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
 
 ## Screenshots (Desktop)
 
-![Screenshot 1](assets/screenshots/desktop_1.png)
-![Screenshot 2](assets/screenshots/desktop_2.png)
+![Screenshot 1](assets/screenshots/desktop_1.png)![Screenshot 2](assets/screenshots/desktop_2.png)
 
 ## Screenshots (Android)
 
-![Screenshot 1](assets/screenshots/android_1.png)
-![Screenshot 2](assets/screenshots/android_2.png)
+![Screenshot 1](assets/screenshots/android_1.png)![Screenshot 2](assets/screenshots/android_2.png)
 
 ### Dark Mode
 
-![Screenshot 1](assets/screenshots/android_1_dark.png)
-![Screenshot 2](assets/screenshots/android_2_dark.png)
+![Screenshot 1](assets/screenshots/android_1_dark.png)![Screenshot 2](assets/screenshots/android_2_dark.png)
 
 ## TODO
 
