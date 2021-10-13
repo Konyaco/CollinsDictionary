@@ -22,7 +22,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("org.jsoup:jsoup:1.11.3")
+                implementation("org.jsoup:jsoup:${extra["jsoup_version"]}")
                 api("androidx.appcompat:appcompat:1.3.1")
                 api("androidx.core:core-ktx:1.6.0")
             }
@@ -30,7 +30,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 api(compose.desktop.currentOs)
-                implementation("org.jsoup:jsoup:1.11.3")
+                implementation("org.jsoup:jsoup:${extra["jsoup_version"]}")
             }
         }
         val jvmTest by getting {
