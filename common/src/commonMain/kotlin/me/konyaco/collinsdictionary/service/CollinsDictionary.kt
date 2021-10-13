@@ -1,7 +1,15 @@
 package me.konyaco.collinsdictionary.service
 
 interface CollinsDictionary {
+    fun search(word: String): SearchResult
+
     fun getDefinition(word: String): Word?
+}
+
+sealed class SearchResult {
+    data class PreciseWord(val word: String) : SearchResult()
+    data class Redirect(val redirectTo: String): SearchResult()
+    data class NotFound(val alternatives: List<String>) : SearchResult()
 }
 
 data class Word(

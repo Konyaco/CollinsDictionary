@@ -12,6 +12,39 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
         return CollinsDictionaryHTMLParser.parse(getHtml(word))
     }
 
+    override fun search(word: String): SearchResult {
+        val url = URL("https://www.collinsdictionary.com/search/?dictCode=english&q=${word}")
+        val conn = (url.openConnection() as HttpsURLConnection).apply {
+            instanceFollowRedirects = false
+            connect()
+        }
+        if (conn.responseCode == 302) {
+            val redirectTo = conn.getHeaderField("location")
+            when {
+                redirectTo.startsWith("https://www.collinsdictionary.com/dictionary/english") -> {
+                    val redirectWord = redirectTo.substringAfterLast("/")
+                    return if (redirectWord == word) {
+                        SearchResult.PreciseWord(redirectWord)
+                    } else {
+                        SearchResult.Redirect(redirectWord)
+                    }
+                }
+                redirectTo.startsWith("https://www.collinsdictionary.com/spellcheck/english") -> {
+                    conn.disconnect()
+
+                    val html = URL(redirectTo).readText() // Get response in [spellcheck]
+                    val list = CollinsSpellCheckParser.parseWordList(html)
+
+                    // Parse result list
+                    return SearchResult.NotFound(list)
+                }
+                else -> error("Could not search word.")
+            }
+        } else {
+            error("Response code is: ${conn.responseCode}")
+        }
+    }
+
     private fun getHtml(word: String): String {
         val url = URL("https://www.collinsdictionary.com/dictionary/english/$word")
 
@@ -20,6 +53,20 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
             connect()
         }
         return conn.inputStream.bufferedReader().readText()
+    }
+}
+
+private object CollinsSpellCheckParser {
+    fun parseWordList(html: String): List<String> {
+        val jsoup = Jsoup.parse(html)
+        val mainContentElement = jsoup.getElementById("main_content")
+            ?: error("Could not parse word list: main_content not found.")
+        val column = mainContentElement.getElementsByClass("columns2")
+            .firstOrNull() ?: error("Could not parse word list: columns2 not found.")
+        val result = column.children().map {
+            it.getElementsByTag("a").firstOrNull()?.text() ?: error("Could not get entry")
+        }
+        return result
     }
 }
 
