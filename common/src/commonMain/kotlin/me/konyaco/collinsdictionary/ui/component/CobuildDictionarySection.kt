@@ -122,8 +122,10 @@ private fun WordInfoWithSound(
                 tint = MaterialTheme.colors.primary
             )
         }
-        Spacer(Modifier.height(4.dp))
-        frequency?.let { WordFrequency(it) }
+        frequency?.let {
+            Spacer(Modifier.height(4.dp))
+            WordFrequency(it)
+        }
     }
 }
 
@@ -148,8 +150,10 @@ private fun WordInfo(
             color = MaterialTheme.colors.onBackground.copy(0.54f),
             lineHeight = 28.sp
         )
-        Spacer(Modifier.height(4.dp))
-        frequency?.let { WordFrequency(it) }
+        frequency?.let {
+            Spacer(Modifier.height(4.dp))
+            WordFrequency(it)
+        }
     }
 }
 
