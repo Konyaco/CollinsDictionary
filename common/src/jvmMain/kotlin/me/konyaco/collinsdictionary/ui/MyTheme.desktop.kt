@@ -1,7 +1,7 @@
 package me.konyaco.collinsdictionary.ui
 
-import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.platform.Font
 
 @Composable
 actual fun MyTheme(content: @Composable () -> Unit) {
-    DesktopMaterialTheme(
+    MaterialTheme(
         colors = if (isSystemInDarkTheme()) darkColors else lightColors,
         typography = Typography(defaultFontFamily = RobotoFontFamily),
         content = content
@@ -61,15 +61,43 @@ actual val RobotoFontFamily: FontFamily =
 actual val SourceSerifProFontFamily: FontFamily =
     FontFamily(
         Font("font/sourceserifpro/SourceSerifPro-Black.ttf", FontWeight.Black, FontStyle.Normal),
-        Font("font/sourceserifpro/SourceSerifPro-BlackItalic.ttf", FontWeight.Black, FontStyle.Italic),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-BlackItalic.ttf",
+            FontWeight.Black,
+            FontStyle.Italic
+        ),
         Font("font/sourceserifpro/SourceSerifPro-Bold.ttf", FontWeight.Bold, FontStyle.Normal),
-        Font("font/sourceserifpro/SourceSerifPro-BoldItalic.ttf", FontWeight.Bold, FontStyle.Italic),
-        Font("font/sourceserifpro/SourceSerifPro-SemiBold.ttf", FontWeight.SemiBold, FontStyle.Normal),
-        Font("font/sourceserifpro/SourceSerifPro-SemiBoldItalic.ttf", FontWeight.SemiBold, FontStyle.Italic),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-BoldItalic.ttf",
+            FontWeight.Bold,
+            FontStyle.Italic
+        ),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-SemiBold.ttf",
+            FontWeight.SemiBold,
+            FontStyle.Normal
+        ),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-SemiBoldItalic.ttf",
+            FontWeight.SemiBold,
+            FontStyle.Italic
+        ),
         Font("font/sourceserifpro/SourceSerifPro-Regular.ttf", FontWeight.Normal, FontStyle.Normal),
         Font("font/sourceserifpro/SourceSerifPro-Italic.ttf", FontWeight.Normal, FontStyle.Italic),
         Font("font/sourceserifpro/SourceSerifPro-Light.ttf", FontWeight.Light, FontStyle.Normal),
-        Font("font/sourceserifpro/SourceSerifPro-LightItalic.ttf", FontWeight.Light, FontStyle.Italic),
-        Font("font/sourceserifpro/SourceSerifPro-ExtraLight.ttf", FontWeight.ExtraLight, FontStyle.Normal),
-        Font("font/sourceserifpro/SourceSerifPro-ExtraLightItalic.ttf", FontWeight.ExtraLight, FontStyle.Italic),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-LightItalic.ttf",
+            FontWeight.Light,
+            FontStyle.Italic
+        ),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-ExtraLight.ttf",
+            FontWeight.ExtraLight,
+            FontStyle.Normal
+        ),
+        Font(
+            "font/sourceserifpro/SourceSerifPro-ExtraLightItalic.ttf",
+            FontWeight.ExtraLight,
+            FontStyle.Italic
+        ),
     )
