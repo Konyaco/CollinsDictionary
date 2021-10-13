@@ -97,16 +97,28 @@ private object CollinsDictionaryHTMLParser {
 
     fun parseSection(dictionaryElement: Element): CobuildDictionarySection {
         val wordName = WordNameParser().parse(dictionaryElement)
+        val wordFrequency = WordFrequencyParser().parse(dictionaryElement)
         val wordForms: List<WordForm>? = WordFormParser().parse(dictionaryElement)
         val pronunciation = PronunciationParser().parse(dictionaryElement)
         val definitionEntries = DefinitionParser().parse(dictionaryElement)
 
         return CobuildDictionarySection(
             word = wordName,
+            frequency = wordFrequency,
             forms = wordForms,
             pronunciation = pronunciation,
             definitionEntries = definitionEntries
         )
+    }
+}
+
+private class WordFrequencyParser {
+    fun parse(dictionaryElement: Element): Int? {
+        return dictionaryElement.getElementsByClass("word-frequency-img")
+            .firstOrNull()
+            ?.attributes()
+            ?.get("data-band")
+            ?.toInt()
     }
 }
 

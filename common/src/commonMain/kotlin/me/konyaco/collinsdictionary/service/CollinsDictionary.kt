@@ -23,6 +23,7 @@ data class CobuildDictionary(
 
 data class CobuildDictionarySection(
     val word: String,
+    val frequency: Int?,
     val forms: List<WordForm>?,
     val pronunciation: Pronunciation,
     val definitionEntries: List<DefinitionEntry>

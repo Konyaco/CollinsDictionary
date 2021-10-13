@@ -12,6 +12,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,6 +39,7 @@ fun CobuildDictionarySection(
 
             if (section.pronunciation.soundUrl != null) WordInfoWithSound(
                 word = section.word,
+                frequency = section.frequency,
                 ipa = section.pronunciation.ipa,
                 soundPlaying = soundPlaying,
                 soundPlayError = error,
@@ -54,7 +58,7 @@ fun CobuildDictionarySection(
                         }
                     )
                 }
-            ) else WordInfo(section.word, section.pronunciation.ipa)
+            ) else WordInfo(section.word, section.pronunciation.ipa, section.frequency)
             // Word Forms
             section.forms?.let { WordForms(it, Modifier.fillMaxWidth()) }
             // Definitions
@@ -81,6 +85,7 @@ private fun Divider(label: String) {
 private fun WordInfoWithSound(
     word: String,
     ipa: String,
+    frequency: Int?,
     soundPlaying: Boolean, // TODO: 2021/8/13
     soundPlayError: Boolean,
     onSoundClick: () -> Unit
@@ -117,13 +122,16 @@ private fun WordInfoWithSound(
                 tint = MaterialTheme.colors.primary
             )
         }
+        Spacer(Modifier.height(4.dp))
+        frequency?.let { WordFrequency(it) }
     }
 }
 
 @Composable
 private fun WordInfo(
     word: String,
-    ipa: String
+    ipa: String,
+    frequency: Int?
 ) {
     // Word and IPA
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -140,6 +148,30 @@ private fun WordInfo(
             color = MaterialTheme.colors.onBackground.copy(0.54f),
             lineHeight = 28.sp
         )
+        Spacer(Modifier.height(4.dp))
+        frequency?.let { WordFrequency(it) }
+    }
+}
+
+@Composable
+private fun WordFrequency(frequency: Int, modifier: Modifier = Modifier) {
+    val activeColor: Color = MaterialTheme.colors.primary
+    val inactiveColor: Color =
+        produceState(activeColor) {
+            value = activeColor.copy(0.3f).compositeOver(Color.White)
+        }.value
+
+    Row(
+        modifier,
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        repeat(5) {
+            Box(
+                modifier = Modifier.size(10.dp).clip(CircleShape)
+                    .background(if (it < frequency) activeColor else inactiveColor)
+            )
+        }
     }
 }
 
