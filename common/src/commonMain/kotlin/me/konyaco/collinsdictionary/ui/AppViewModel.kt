@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import me.konyaco.collinsdictionary.service.CollinsOnlineDictionary
+import me.konyaco.collinsdictionary.service.SearchResult
 import me.konyaco.collinsdictionary.service.Word
 
 class AppViewModel {
@@ -26,16 +27,33 @@ class AppViewModel {
             queryState.emit(State.Searching)
 
             val result = try {
-                collinsDictionary.getDefinition(word)
+                collinsDictionary.search(word)
             } catch (e: Exception) {
                 queryState.emit(State.Failed(e.message ?: "Unknown error"))
                 return@launch
             }
 
-            if (result == null) {
-                queryState.emit(State.WordNotFound)
-            } else {
-                queryState.emit(State.Succeed(result))
+            when(result) {
+                is SearchResult.PreciseWord -> {
+                    val word = collinsDictionary.getDefinition(result.word)
+                    if (word != null) {
+                        queryState.emit(State.Succeed(word))
+                    } else {
+                        queryState.emit(State.WordNotFound)
+                    }
+                }
+                is SearchResult.Redirect -> {
+                    val word = collinsDictionary.getDefinition(result.redirectTo)
+                    if (word != null) {
+                        queryState.emit(State.Succeed(word))
+                    } else {
+                        queryState.emit(State.WordNotFound)
+                    }
+                }
+                is SearchResult.NotFound -> {
+                    queryState.emit(State.WordNotFound)
+                    // TODO: Use user-friendly UI to display alternatives.
+                }
             }
         }
     }
