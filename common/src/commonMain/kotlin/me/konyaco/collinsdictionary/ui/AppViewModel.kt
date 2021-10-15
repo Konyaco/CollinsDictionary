@@ -25,35 +25,34 @@ class AppViewModel {
     fun search(word: String) {
         scope.launch {
             queryState.emit(State.Searching)
+            try {
+                val result = collinsDictionary.search(word)
 
-            val result = try {
-                collinsDictionary.search(word)
+                when (result) {
+                    is SearchResult.PreciseWord -> {
+                        val word = collinsDictionary.getDefinition(result.word)
+                        if (word != null) {
+                            queryState.emit(State.Succeed(word))
+                        } else {
+                            queryState.emit(State.WordNotFound)
+                        }
+                    }
+                    is SearchResult.Redirect -> {
+                        val word = collinsDictionary.getDefinition(result.redirectTo)
+                        if (word != null) {
+                            queryState.emit(State.Succeed(word))
+                        } else {
+                            queryState.emit(State.WordNotFound)
+                        }
+                    }
+                    is SearchResult.NotFound -> {
+                        queryState.emit(State.WordNotFound)
+                        // TODO: Use user-friendly UI to display alternatives.
+                    }
+                }
             } catch (e: Exception) {
                 queryState.emit(State.Failed(e.message ?: "Unknown error"))
                 return@launch
-            }
-
-            when(result) {
-                is SearchResult.PreciseWord -> {
-                    val word = collinsDictionary.getDefinition(result.word)
-                    if (word != null) {
-                        queryState.emit(State.Succeed(word))
-                    } else {
-                        queryState.emit(State.WordNotFound)
-                    }
-                }
-                is SearchResult.Redirect -> {
-                    val word = collinsDictionary.getDefinition(result.redirectTo)
-                    if (word != null) {
-                        queryState.emit(State.Succeed(word))
-                    } else {
-                        queryState.emit(State.WordNotFound)
-                    }
-                }
-                is SearchResult.NotFound -> {
-                    queryState.emit(State.WordNotFound)
-                    // TODO: Use user-friendly UI to display alternatives.
-                }
             }
         }
     }
