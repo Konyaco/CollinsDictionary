@@ -5,7 +5,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
@@ -17,7 +17,7 @@ import java.net.URL
 private const val TAG = "SoundPlayer.android"
 
 class SoundPlayerImpl : SoundPlayer {
-    lateinit var context: Context
+    var context: Context? = null
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
@@ -29,21 +29,19 @@ class SoundPlayerImpl : SoundPlayer {
     ) {
         scope.launch(Dispatchers.IO) {
             try {
-                Log.d(TAG, "Try to play: $url")
                 val fileName =
                     url.substringAfterLast("/") // Get filename part of url (xx://xx/xxx.mp3)
-                val file = context.externalCacheDir!!.resolve("sound")
+                val file = context!!.externalCacheDir!!.resolve("sound")
                     .also { it.mkdir() }
                     .resolve(fileName)
                 if (!file.exists()) {
-                    Log.d(TAG, "Caching file $fileName")
                     val bytes = URL(url).readBytes()
                     file.outputStream().use {
                         it.write(bytes)
                     }
                 }
                 MediaPlayer().apply {
-                    setDataSource(context, file.toUri())
+                    setDataSource(context!!, file.toUri())
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -51,15 +49,11 @@ class SoundPlayerImpl : SoundPlayer {
                             .build()
                     )
                     prepare()
-                    Log.d(TAG, "Prepared")
                     onStart()
                     start()
-                    Log.d(TAG, "Started")
                     setOnCompletionListener {
-                        Log.d(TAG, "Stopped")
                         onStop()
                         release()
-                        Log.d(TAG, "Released")
                     }
                 }
             } catch (e: Throwable) {
@@ -70,13 +64,13 @@ class SoundPlayerImpl : SoundPlayer {
     }
 }
 
-actual val soundPlayer: SoundPlayer
-    @Composable
-    get() {
-        val context = LocalContext.current.applicationContext
-        val soundPlayer = remember { SoundPlayerImpl() }
-        LaunchedEffect(null) {
-            soundPlayer.context = context
-        }
-        return soundPlayer
+@Composable
+actual fun getSoundPlayer(): SoundPlayer {
+    val context = LocalContext.current.applicationContext
+    val soundPlayer = remember { SoundPlayerImpl() }
+    DisposableEffect(Unit) {
+        soundPlayer.context = context
+        onDispose { soundPlayer.context = null }
     }
+    return soundPlayer
+}

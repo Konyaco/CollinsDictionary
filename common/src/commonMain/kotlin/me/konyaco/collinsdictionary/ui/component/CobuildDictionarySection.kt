@@ -17,12 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.konyaco.collinsdictionary.service.CobuildDictionarySection
 import me.konyaco.collinsdictionary.service.DefinitionEntry
+import me.konyaco.collinsdictionary.service.LocalSoundPlayer
 import me.konyaco.collinsdictionary.service.WordForm
-import me.konyaco.collinsdictionary.service.soundPlayer
 import me.konyaco.collinsdictionary.ui.MyRes
 import me.konyaco.collinsdictionary.ui.SourceSerifProFontFamily
 
@@ -33,7 +34,8 @@ fun CobuildDictionarySection(
 ) {
     SelectionContainer {
         Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            val soundPlayer = soundPlayer
+            val soundPlayer = LocalSoundPlayer.current
+
             var soundPlaying by remember { mutableStateOf(false) }
             var error by remember { mutableStateOf(false) }
 
@@ -52,7 +54,6 @@ fun CobuildDictionarySection(
                         },
                         onStop = { soundPlaying = false },
                         onError = {
-                            println(it)
                             soundPlaying = false
                             error = true
                         }
@@ -114,7 +115,7 @@ private fun WordInfoWithSound(
                 color = MaterialTheme.colors.onBackground.copy(0.54f),
                 lineHeight = 28.sp
             )
-            // Sound playing animation
+            // TODO: Sound playing animation
             Icon(
                 modifier = Modifier.offset(y = 1.dp), // To visually align to horizon
                 painter = MyRes.Sound,
@@ -232,10 +233,11 @@ private fun Definitions(definitionEntries: List<DefinitionEntry>, modifier: Modi
             })) {
                 // Definition
                 Text(
-                    modifier = Modifier.padding(start = 18.dp),
+                    modifier = Modifier.padding(horizontal = 18.dp),
                     text = entry.definition.def,
                     fontSize = 16.sp,
                     color = MaterialTheme.colors.onBackground.copy(0.54f),
+                    textAlign = TextAlign.Justify,
                     lineHeight = (18.75).sp // TODO: Font Roboto
                 )
                 // Example Sentences
@@ -260,68 +262,12 @@ private fun ExampleSentence(sentence: String) {
                 .background(MaterialTheme.colors.onBackground, CircleShape)
         )
         Text(
+            modifier = Modifier.padding(end = 18.dp),
             text = sentence,
             fontSize = 16.sp,
             fontFamily = SourceSerifProFontFamily,
-            lineHeight = 22.sp
+            lineHeight = 22.sp,
+            textAlign = TextAlign.Justify
         )
     }
 }
-
-
-/*
-@Preview
-@Composable
-private fun Preview() {
-    MyTheme {
-        CobuildDictionarySection(
-            CobuildDictionarySection(
-                word = "example",
-                forms = listOf(WordForm("plural", "examples")),
-                pronunciation = Pronunciation("ɪgzɑːmpəl", null),
-                definitionEntries = listOf(
-                    DefinitionEntry(
-                        1, "COUNTABLE NOUN", Definition(
-                            "An example of something is a particular situation, object, or person which shows that what is being claimed is true.",
-                            listOf(
-                                ExampleSentence(
-                                    "The doctors gave numerous examples of patients being expelled from hospital.",
-                                    "+ of",
-                                    null,
-                                    emptyList()
-                                ),
-                                ExampleSentence(
-                                    "Listed below are just a few examples of some of the family benefits available.",
-                                    "+ of",
-                                    null,
-                                    emptyList()
-                                )
-                            )
-                        ),
-                        extraDefinitions = emptyList()
-                    ),
-                    DefinitionEntry(
-                        2, "COUNTABLE NOUN", definition = Definition(
-                            "An example of a particular class of objects or styles is something that has many of the typical features of such a class or style, and that you consider clearly represents it.",
-                            listOf(
-                                ExampleSentence(
-                                    "Symphonies 103 and 104 stand as perfect examples of early symphonic construction.",
-                                    "+ of",
-                                    null,
-                                    emptyList()
-                                ),
-                                ExampleSentence(
-                                    "The plaque illustrated in Figure 1 is an example of his work at this time.",
-                                    null,
-                                    null,
-                                    emptyList()
-                                )
-                            )
-                        ),
-                        emptyList()
-                    )
-                )
-            )
-        )
-    }
-}*/
