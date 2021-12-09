@@ -8,7 +8,9 @@ import me.konyaco.collinsdictionary.ui.MyTheme
 import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 
 class MainActivity : AppCompatActivity() {
-    private val component by lazy { AppViewModel() }
+    private val component by lazy {
+        AppViewModel((application as MyApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
