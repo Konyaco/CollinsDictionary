@@ -1,0 +1,23 @@
+name: Build linux distributions
+on:
+  workflow_dispatch:
+jobs:
+  build-distrubutions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.1
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Run gradle package task
+        run: |
+          chmod +x gradlew
+          ./gradlew package --no-daemon
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Distrubution
+          path: ./build/compose/binaries/main/deb/*
