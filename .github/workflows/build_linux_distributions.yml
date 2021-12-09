@@ -16,8 +16,13 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew package --no-daemon
-      - name: Upload a Build Artifact
+      - name: Upload rpm distribution
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: Distrubution
-          path: ./build/compose/binaries/main/deb/*
+          name: Rpm distribution
+          path: ./desktop/build/compose/binaries/main/rpm/*
+      - name: Upload deb distribution
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Deb distribution
+          path: ./desktop/build/compose/binaries/main/deb/*
