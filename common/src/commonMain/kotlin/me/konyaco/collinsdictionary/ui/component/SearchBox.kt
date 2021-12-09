@@ -1,8 +1,8 @@
 package me.konyaco.collinsdictionary.ui.component
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -28,51 +27,67 @@ fun SearchBox(
     modifier: Modifier,
     value: String,
     onValueChange: (newValue: String) -> Unit,
+    isSearching: Boolean,
     onSearchClick: () -> Unit
 ) {
-    Surface(modifier, color = myColors.searchBoxBackground) {
-        Box(contentAlignment = Alignment.CenterStart) {
-            BasicTextField(
-                modifier = Modifier.matchParentSize(),
-                value = value,
-                onValueChange = onValueChange,
-                singleLine = true,
-                cursorBrush = SolidColor(MaterialTheme.colors.primary),
-                keyboardActions = KeyboardActions(
-                    onDone = { onSearchClick() },
-                    onSearch = { onSearchClick() }
-                ),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Ascii,
-                    imeAction = ImeAction.Search
-                ),
-                textStyle = TextStyle(
-                    color = myColors.onSearchBox.copy(0.6f),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal
-                ),
-                maxLines = 1,
-                decorationBox = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        it()
-                        if (value.isEmpty()) Text(
-                            "Search...",
-                            fontSize = 16.sp,
-                            color = myColors.onSearchBox.copy(0.6f)
-                        )
+    Column(modifier.fillMaxWidth()) {
+        Surface(Modifier.fillMaxWidth().wrapContentHeight(), color = myColors.searchBoxBackground) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
+                BasicTextField(
+                    modifier = Modifier.matchParentSize(),
+                    value = value,
+                    onValueChange = onValueChange,
+                    singleLine = true,
+                    cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onSearchClick() },
+                        onSearch = { onSearchClick() }
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        keyboardType = KeyboardType.Ascii,
+                        imeAction = ImeAction.Search
+                    ),
+                    textStyle = TextStyle(
+                        color = myColors.onSearchBox.copy(0.6f),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    maxLines = 1,
+                    decorationBox = {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            it()
+                            if (value.isEmpty()) Text(
+                                "Search...",
+                                fontSize = 16.sp,
+                                color = myColors.onSearchBox.copy(0.6f)
+                            )
+                        }
                     }
-                }
-            )
+                )
 
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                onClick = onSearchClick
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    onClick = onSearchClick,
+                    enabled = !isSearching && value.isNotBlank()
+                ) {
+                    Icon(
+                        Icons.Filled.Search, "Search", tint = myColors.onSearchBox
+                            .copy(LocalContentAlpha.current)
+                    )
+                }
+            }
+        }
+        Box(Modifier.height(4.dp).fillMaxWidth()) {
+            androidx.compose.animation.AnimatedVisibility(
+                isSearching,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                Icon(Icons.Filled.Search, "Search", tint = myColors.onSearchBox)
+                LinearProgressIndicator(Modifier.fillMaxWidth())
             }
         }
     }

@@ -6,9 +6,6 @@ plugins {
     id("org.jetbrains.compose")
 }
 
-group = "me.konyaco.collinsdictionary"
-version = "1.4.0"
-
 kotlin {
     jvm {
         compilations.all {
@@ -32,6 +29,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "CollinsDictionary"
+            packageVersion = rootProject.version as String
             vendor = "Konyaco"
             windows {
                 perUserInstall = true

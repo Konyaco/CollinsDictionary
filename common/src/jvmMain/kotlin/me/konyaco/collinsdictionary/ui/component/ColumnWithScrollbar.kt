@@ -1,4 +1,4 @@
-package me.konyaco.collinsdictionary.ui
+package me.konyaco.collinsdictionary.ui.component
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement

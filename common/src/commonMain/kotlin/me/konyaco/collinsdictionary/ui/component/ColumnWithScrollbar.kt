@@ -1,4 +1,4 @@
-package me.konyaco.collinsdictionary.ui
+package me.konyaco.collinsdictionary.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -1,12 +1,13 @@
 package me.konyaco.collinsdictionary.ui
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import me.konyaco.collinsdictionary.service.ProvideSoundPlayer
 import me.konyaco.collinsdictionary.service.Word
 import me.konyaco.collinsdictionary.ui.component.CobuildDictionarySection
+import me.konyaco.collinsdictionary.ui.component.ColumnWithScrollBar
 import me.konyaco.collinsdictionary.ui.component.SearchBox
+import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 
 val LocalScreenSize = compositionLocalOf { ScreenSize.PHONE }
 
@@ -49,20 +52,14 @@ fun ProvideLocalScreenSize(content: @Composable () -> Unit) {
 
 @Composable
 fun App(viewModel: AppViewModel) {
-    App(viewModel.queryState.collectAsState().value) { viewModel.search(it) }
+    App(
+        viewModel.queryResult.collectAsState().value,
+        viewModel.isSearching.collectAsState().value
+    ) { viewModel.search(it) }
 }
 
-sealed class State {
-    object None : State()
-    object Searching : State()
-    data class Succeed(val data: Word) : State()
-    object WordNotFound : State()
-    data class Failed(val message: String) : State()
-}
-
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun App(uiState: State, onSearch: (text: String) -> Unit) {
+fun App(data: AppViewModel.Result?, isSearching: Boolean, onSearch: (text: String) -> Unit) {
     ProvideSoundPlayer {
         ProvideLocalScreenSize {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -78,50 +75,47 @@ fun App(uiState: State, onSearch: (text: String) -> Unit) {
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    Banner(uiState is State.None, padding)
-
+                    Banner(display = data == null, padding)
                     Spacer(Modifier.height(32.dp))
-
                     var input by remember { mutableStateOf("") }
                     SearchBox(
                         modifier = Modifier.padding(horizontal = padding).fillMaxWidth(),
                         value = input,
                         onValueChange = { input = it },
-                        onSearchClick = { onSearch(input) }
+                        onSearchClick = { onSearch(input) },
+                        isSearching = isSearching
                     )
-
-                    AnimatedContent(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        targetState = uiState
-                    ) { state ->
-                        when (state) {
-                            State.None -> {
-                            }
-                            is State.Succeed -> {
-                                Content(state.data, padding)
-                            }
-                            is State.Failed -> {
-                                ErrorPage(state.message, Modifier.fillMaxWidth())
-                            }
-                            State.Searching -> {
-                                Box(Modifier.fillMaxWidth().padding(horizontal = padding)) {
-                                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                                }
-                            }
-                            State.WordNotFound -> {
-                                WordNotFound(Modifier.fillMaxSize().padding(vertical = 32.dp))
-                            }
-                        }
-                    }
+                    Result(Modifier.weight(1f).fillMaxWidth(), data, padding)
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun Result(modifier: Modifier, data: AppViewModel.Result?, contentPadding: Dp) {
+    AnimatedContent(modifier = modifier, targetState = data) { data ->
+        when (data) {
+            is AppViewModel.Result.Succeed -> Content(data.data, contentPadding)
+            AppViewModel.Result.WordNotFound -> WordNotFound(
+                Modifier.fillMaxSize().padding(vertical = 32.dp)
+            )
+            is AppViewModel.Result.Failed -> ErrorPage(
+                data.message,
+                Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
 @Composable
 private fun Banner(display: Boolean, contentPadding: Dp) {
-    AnimatedVisibility(display) {
+    AnimatedVisibility(
+        display,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
+    ) {
         Box(Modifier.fillMaxHeight(0.5f), contentAlignment = Alignment.BottomStart) {
             Column(Modifier.padding(vertical = 16.dp, horizontal = contentPadding)) {
                 Title()
@@ -152,7 +146,7 @@ private fun CollinsDivider() {
 
 @Composable
 private fun Content(word: Word, contentPadding: Dp) {
-    ColumnWithScrollBar(Modifier.fillMaxWidth()) {
+    ColumnWithScrollBar(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(4.dp))
         word.cobuildDictionary.sections.forEach { section ->
             CobuildDictionarySection(
