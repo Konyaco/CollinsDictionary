@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -161,10 +160,7 @@ private fun WordInfo(
 @Composable
 private fun WordFrequency(frequency: Int, modifier: Modifier = Modifier) {
     val activeColor: Color = MaterialTheme.colors.primary
-    val inactiveColor: Color =
-        produceState(activeColor) {
-            value = activeColor.copy(0.3f).compositeOver(Color.White)
-        }.value
+    val inactiveColor: Color = activeColor.copy(0.24f)
 
     Row(
         modifier,
