@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -69,9 +70,13 @@ fun SearchBox(
                     }
                 )
 
+                val focusManager = LocalFocusManager.current
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
-                    onClick = onSearchClick,
+                    onClick = {
+                        focusManager.clearFocus()
+                        onSearchClick()
+                    },
                     enabled = !isSearching && value.isNotBlank()
                 ) {
                     Icon(
