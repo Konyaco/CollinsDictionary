@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.android.library")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -11,6 +12,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:${extra["serialization_version"]}")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.animation)
