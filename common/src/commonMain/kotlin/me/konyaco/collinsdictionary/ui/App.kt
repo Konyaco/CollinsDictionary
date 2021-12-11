@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import me.konyaco.collinsdictionary.service.ProvideSoundPlayer
 import me.konyaco.collinsdictionary.service.Word
 import me.konyaco.collinsdictionary.ui.component.CobuildDictionarySection
@@ -79,13 +80,13 @@ fun App(data: AppViewModel.Result?, isSearching: Boolean, onSearch: (text: Strin
                     Spacer(Modifier.height(32.dp))
                     var input by remember { mutableStateOf("") }
                     SearchBox(
-                        modifier = Modifier.padding(horizontal = padding).fillMaxWidth(),
+                        modifier = Modifier.zIndex(2f).padding(horizontal = padding).fillMaxWidth(),
                         value = input,
                         onValueChange = { input = it },
                         onSearchClick = { onSearch(input) },
                         isSearching = isSearching
                     )
-                    Result(Modifier.weight(1f).fillMaxWidth(), data, padding)
+                    Result(Modifier.zIndex(1f).weight(1f).fillMaxWidth(), data, padding)
                 }
             }
         }

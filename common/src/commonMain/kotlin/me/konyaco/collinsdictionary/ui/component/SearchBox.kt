@@ -1,5 +1,6 @@
 package me.konyaco.collinsdictionary.ui.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
@@ -31,7 +32,7 @@ fun SearchBox(
     isSearching: Boolean,
     onSearchClick: () -> Unit
 ) {
-    Column(modifier.fillMaxWidth()) {
+    Box(modifier.fillMaxWidth()) {
         Surface(Modifier.fillMaxWidth().wrapContentHeight(), color = myColors.searchBoxBackground) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
                 BasicTextField(
@@ -86,8 +87,8 @@ fun SearchBox(
                 }
             }
         }
-        Box(Modifier.height(4.dp).fillMaxWidth()) {
-            androidx.compose.animation.AnimatedVisibility(
+        Box(Modifier.align(Alignment.BottomCenter).offset(y = 4.dp).height(4.dp).fillMaxWidth()) {
+            AnimatedVisibility(
                 isSearching,
                 enter = fadeIn(),
                 exit = fadeOut()
