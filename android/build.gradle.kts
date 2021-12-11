@@ -10,13 +10,17 @@ android {
         applicationId = "me.konyaco.collinsdictionary"
         minSdk = 21
         targetSdk = 31
-        versionCode = 3
+        versionCode = 5
         versionName = rootProject.version as String
     }
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
