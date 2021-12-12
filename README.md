@@ -1,5 +1,7 @@
 # Collins Dictionary
 
+![Bannner](assets/banner.png)
+
 This is a multi-platform Collins Dictionary client, supports for Desktop(Windows/Linux/MacOS) and Android.
 
 *For Linux and MacOS, please compile for yourself.*
