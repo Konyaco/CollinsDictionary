@@ -11,7 +11,7 @@ android {
         minSdk = 21
         targetSdk = 31
         versionCode = 5
-        versionName = rootProject.version as String
+        versionName = "1.4.2"
     }
 
     buildTypes {
