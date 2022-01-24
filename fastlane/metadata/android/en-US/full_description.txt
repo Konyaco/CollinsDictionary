@@ -1,0 +1,3 @@
+This is a client for Collins Dictionary. It gets word definitions by parsing <a href='https://www.collinsdcionary.com/' target='_blank' rel='nofollow'>Collins Online Dictionary</a> website. There is no license from Collins organization. This repository is for learning purposes only. Commercial use is prohibited.
+
+The client is also available for Desktop (Windows/Linux/MacOS) PCs.
