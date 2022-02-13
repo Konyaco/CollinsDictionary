@@ -11,7 +11,7 @@ class LocalCacheDictionary(private val localStorage: LocalStorage) : CollinsDict
         prettyPrint = false
     }
 
-    override fun search(word: String): SearchResult {
+    override suspend fun search(word: String): SearchResult {
         return when (val text = localStorage.getSearch(word)) {
             null -> SearchResult.NotFound(emptyList())
             word -> SearchResult.PreciseWord(word)
@@ -19,7 +19,7 @@ class LocalCacheDictionary(private val localStorage: LocalStorage) : CollinsDict
         }
     }
 
-    override fun getDefinition(word: String): Word? {
+    override suspend fun getDefinition(word: String): Word? {
         val text = localStorage.getDefinition(word) ?: return null
         return json.decodeFromString<Word>(text)
     }

@@ -1,57 +1,76 @@
 package me.konyaco.collinsdictionary.service
 
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import java.net.URL
 import java.util.*
-import javax.net.ssl.HttpsURLConnection
 
 actual class CollinsOnlineDictionary : CollinsDictionary {
-    override fun getDefinition(word: String): Word? {
+    private val client = HttpClient(CIO) { followRedirects = false }
+    private val clientFollowRedirect = HttpClient(CIO)
+
+    companion object {
+        private const val SEARCH_URL = "https://www.collinsdictionary.com/search"
+        private const val SPELL_CHECK_URL = "https://www.collinsdictionary.com/spellcheck/english"
+        private const val DICTIONARY_URL = "https://www.collinsdictionary.com/dictionary/english"
+        private fun buildSearchURL(word: String) = "$SEARCH_URL/?dictCode=english&q=$word"
+        private fun buildDictionaryURL(word: String) = "$DICTIONARY_URL/$word"
+    }
+
+    override suspend fun getDefinition(word: String): Word? {
         return CollinsDictionaryHTMLParser.parse(getHtml(word))
     }
 
-    override fun search(word: String): SearchResult {
-        val url = URL("https://www.collinsdictionary.com/search/?dictCode=english&q=${word}")
-        val conn = (url.openConnection() as HttpsURLConnection).apply {
-            instanceFollowRedirects = false
-            connect()
+    override suspend fun search(word: String): SearchResult {
+        val response = try {
+            client.get<HttpResponse>(buildSearchURL(word))
+        } catch (e: RedirectResponseException) {
+            e.response
         }
-        if (conn.responseCode == 302) {
-            val redirectTo = conn.getHeaderField("location")
-            when {
-                redirectTo.startsWith("https://www.collinsdictionary.com/dictionary/english") -> {
-                    val redirectWord = redirectTo.substringAfterLast("/")
-                    return if (redirectWord == word) {
-                        SearchResult.PreciseWord(redirectWord)
-                    } else {
-                        SearchResult.Redirect(redirectWord)
-                    }
-                }
-                redirectTo.startsWith("https://www.collinsdictionary.com/spellcheck/english") -> {
-                    conn.disconnect()
 
-                    val html = URL(redirectTo).readText() // Get response in [spellcheck]
-                    val list = CollinsSpellCheckParser.parseWordList(html)
+        if (response.status == HttpStatusCode.Found) {
+            val redirectedUrl =
+                response.headers[HttpHeaders.Location] ?: error("Redirect to header was not found.")
 
-                    // Parse result list
-                    return SearchResult.NotFound(list)
+            return if (isPrecise(redirectedUrl)) {
+                val redirectWord = getRedirectedWord(redirectedUrl)
+                if (redirectWord == word) {
+                    SearchResult.PreciseWord(redirectWord)
+                } else {
+                    SearchResult.Redirect(redirectWord)
                 }
-                else -> error("Could not search word.")
+            } else {
+                val html = client.get<String>(redirectedUrl) // Get response in [spellcheck]
+                val list = CollinsSpellCheckParser.parseWordList(html)  // Parse result list
+                SearchResult.NotFound(list)
             }
         } else {
-            error("Response code is: ${conn.responseCode}")
+            error("Response code is: ${response.status}")
         }
     }
 
-    private fun getHtml(word: String): String {
-        val url = URL("https://www.collinsdictionary.com/dictionary/english/$word")
-
-        val conn = (url.openConnection() as HttpsURLConnection).apply {
-            instanceFollowRedirects = false
-            connect()
+    /**
+     * If the search result redirects to a precise page. Or to a spellcheck page.
+     */
+    private fun isPrecise(redirectedUrl: String): Boolean {
+        return when {
+            redirectedUrl.startsWith(DICTIONARY_URL) -> true
+            redirectedUrl.startsWith(SPELL_CHECK_URL) -> false
+            else -> error("Could not search word.")
         }
-        return conn.inputStream.bufferedReader().readText()
+    }
+
+    private fun getRedirectedWord(redirectedUrl: String): String =
+        redirectedUrl.substringAfterLast("/")
+
+    private suspend fun getHtml(word: String): String {
+        // Some words may be redirected to another (like "out" -> "out_1")
+        return clientFollowRedirect.get<String>(buildDictionaryURL(word))
     }
 }
 
@@ -79,19 +98,21 @@ private object CollinsDictionaryHTMLParser {
     }
 
     fun parseCobuildDictionary(mainContentElement: Element): CobuildDictionary {
-        val cobuildElement =
-            mainContentElement.getElementsByClass("dictionary Cob_Adv_Brit dictentry").firstOrNull()
-
-        return if (cobuildElement != null) {
-            CobuildDictionary(listOf(parseSection(cobuildElement)))
-        } else {
+        return run {
+            val cobuildElement =
+                mainContentElement.getElementsByClass("dictionary Cob_Adv_Brit dictentry")
+                    .firstOrNull()
+            cobuildElement?.let {
+                CobuildDictionary(listOf(parseSection(it)))
+            }
+        } ?: run {
             val dictionaries =
                 mainContentElement.getElementsByClass("dictionary Cob_Adv_Brit").firstOrNull()
                     ?: error("Cannot find COBUILD dictionary element")
             // Some words (like "take") have multiple section for different usage.
             val sectionElements = dictionaries.getElementsByClass("dictentry dictlink")
             val sections = sectionElements.map { parseSection(it) }
-            return CobuildDictionary(sections)
+            CobuildDictionary(sections)
         }
     }
 

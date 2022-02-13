@@ -1,7 +1,7 @@
 import me.konyaco.collinsdictionary.service.CobuildDictionarySection
 import me.konyaco.collinsdictionary.service.CollinsOnlineDictionary
 
-fun cli() {
+suspend fun cli() {
     val collinsDictionary = CollinsOnlineDictionary()
 
     while (true) {

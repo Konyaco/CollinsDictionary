@@ -10,7 +10,7 @@ import me.konyaco.collinsdictionary.ui.MyTheme
 import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 import java.io.File
 
-fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) {
     if (args.getOrNull(0) == "cli") cli()
     else gui()
 }

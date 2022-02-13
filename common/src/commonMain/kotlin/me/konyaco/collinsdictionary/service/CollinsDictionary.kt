@@ -3,9 +3,8 @@ package me.konyaco.collinsdictionary.service
 import kotlinx.serialization.Serializable
 
 interface CollinsDictionary {
-    fun search(word: String): SearchResult
-
-    fun getDefinition(word: String): Word?
+    suspend fun search(word: String): SearchResult
+    suspend fun getDefinition(word: String): Word?
 }
 
 @Serializable
