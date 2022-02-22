@@ -20,4 +20,4 @@ allprojects {
 }
 
 group = "me.konyaco.collinsdictionary"
-version = "1.4.3"
+version = "1.4.4"
