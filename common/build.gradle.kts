@@ -10,10 +10,13 @@ kotlin {
     jvm()
 
     sourceSets {
+        val ktorVersion = extra["ktor_version"]
+        val serializationVersion = extra["serialization_version"]
+        val jsoupVersion = extra["jsoup_version"]
+        val coroutinesVersion = extra["coroutines_version"]
+
         val commonMain by getting {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:${extra["serialization_version"]}")
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.animation)
@@ -21,22 +24,24 @@ kotlin {
                 api(compose.preview)
                 api(compose.uiTooling)
                 api(compose.materialIconsExtended)
-                api("io.ktor:ktor-client-cio:1.6.7")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                api("io.ktor:ktor-client-cio:$ktorVersion")
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation("org.jsoup:jsoup:${extra["jsoup_version"]}")
                 api("androidx.appcompat:appcompat:1.4.1")
                 api("androidx.core:core-ktx:1.7.0")
-                api("io.ktor:ktor-client-cio:1.6.7")
+                api("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("org.jsoup:jsoup:$jsoupVersion")
             }
         }
         val jvmMain by getting {
             dependencies {
                 api(compose.desktop.currentOs)
-                implementation("org.jsoup:jsoup:${extra["jsoup_version"]}")
-                api("io.ktor:ktor-client-cio:1.6.7")
+                api("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("org.jsoup:jsoup:$jsoupVersion")
             }
         }
         val jvmTest by getting {

@@ -208,12 +208,12 @@ private class DefinitionParser {
                     ?: return@forEachIndexed // Maybe it's not a definition, just skip
 //                    ?: error("Cannot find grammar group in entry $index")
 
-            val senseElement = element.getElementsByClass("sense").first()
-            val defElement = senseElement.getElementsByClass("def").first()
+            val senseElement = element.getElementsByClass("sense").first()!!
+            val defElement = senseElement.getElementsByClass("def").first()!!
             val def = defElement.text()
 
             val examples = senseElement.getElementsByClass("cit type-example").map {
-                val sentence = it.getElementsByClass("quote").first().text()
+                val sentence = it.getElementsByClass("quote").first()!!.text()
                 ExampleSentence(
                     sentence,
                     null,
