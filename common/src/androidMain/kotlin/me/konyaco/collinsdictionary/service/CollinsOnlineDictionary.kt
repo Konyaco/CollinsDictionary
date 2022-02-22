@@ -183,13 +183,18 @@ private class WordFormParser {
 
 private class PronunciationParser {
     fun parse(dictionaryElement: Element): Pronunciation {
-        val pronElement = dictionaryElement.getElementsByClass("pron type-").firstOrNull()
+        val pronElement = dictionaryElement.getElementsByClass("mini_h2").firstOrNull()
             ?: error("Cannot find word pronunciation")
-        val pronStr = pronElement.text()
+        val pronItem = dictionaryElement.getElementsByClass("pron type-").firstOrNull()
+        val pronStr = pronItem?.text()
         val soundElement = pronElement.getElementsByAttribute("data-src-mp3").firstOrNull()
-            ?: error("Cannot find sound element")
-        val sound = soundElement.attributes()["data-src-mp3"] ?: error("Cannot find sound url")
-        return Pronunciation(pronStr, sound)
+        val sound = soundElement?.let {
+            it.attributes()["data-src-mp3"] ?: error("Cannot find sound url")
+        }
+        if (pronStr == null && soundElement == null) {
+            error("Cannot find word pronunciation")
+        }
+        return Pronunciation(pronStr ?: "", sound)
     }
 }
 
