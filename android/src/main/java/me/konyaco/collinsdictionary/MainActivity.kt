@@ -1,6 +1,7 @@
 package me.konyaco.collinsdictionary
 
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import me.konyaco.collinsdictionary.ui.App
@@ -17,6 +18,13 @@ class MainActivity : AppCompatActivity() {
         setContent {
             MyTheme {
                 App(viewModel)
+                BackHandler {
+                    if(viewModel.uiState.value.queryResult != null) {
+                        viewModel.clearResult()
+                    } else {
+                        finish()
+                    }
+                }
             }
         }
     }
