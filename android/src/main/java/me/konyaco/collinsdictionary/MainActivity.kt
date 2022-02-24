@@ -5,11 +5,10 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import me.konyaco.collinsdictionary.ui.App
 import me.konyaco.collinsdictionary.ui.MyTheme
-import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 
 class MainActivity : AppCompatActivity() {
-    private val component by lazy {
-        AppViewModel((application as MyApplication).repository)
+    private val viewModel by lazy {
+        (application as MyApplication).viewModel
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             MyTheme {
-                App(component)
+                App(viewModel)
             }
         }
     }

@@ -2,32 +2,44 @@ package me.konyaco.collinsdictionary.viewmodel
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import me.konyaco.collinsdictionary.repository.Repository
 import me.konyaco.collinsdictionary.service.SearchResult
 import me.konyaco.collinsdictionary.service.Word
 
+data class AppUiState(
+    val isSearching: Boolean,
+    val queryResult: Result?
+) {
+    sealed class Result(open val word: String) {
+        data class Succeed(override val word: String, val data: Word) : Result(word)
+        data class WordNotFound(override val word: String) : Result(word)
+        data class Failed(override val word: String, val message: String) : Result(word)
+    }
+}
+
 class AppViewModel(private val repository: Repository) {
+    private val _uiState = MutableStateFlow<AppUiState>(AppUiState(false, null))
+    val uiState = _uiState.asStateFlow()
+
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    sealed class Result {
-        data class Succeed(val data: Word) : Result()
-        object WordNotFound : Result()
-        data class Failed(val message: String) : Result()
-    }
-
-    val isSearching = MutableStateFlow(false)
-    val queryResult = MutableStateFlow<Result?>(null)
+    private var searchJob: Job? = null
 
     fun search(word: String) {
-        scope.launch {
-            isSearching.emit(true)
+        searchJob?.cancel()
+        searchJob = scope.launch {
+            _uiState.let {
+                it.emit(it.value.copy(isSearching = true))
+            }
+
             try {
                 repository.search(word).take(1).collect { result ->
-                    when (result.data) {
+                    val queryResult = when (result.data) {
                         is SearchResult.PreciseWord -> {
                             getDef(result.data.word)
                         }
@@ -35,29 +47,45 @@ class AppViewModel(private val repository: Repository) {
                             getDef(result.data.redirectTo)
                         }
                         is SearchResult.NotFound -> {
-                            queryResult.emit(Result.WordNotFound)
+                            AppUiState.Result.WordNotFound(word)
                             // TODO: Use user-friendly UI to display alternatives.
                         }
+                    }
+                    _uiState.let {
+                        it.emit(it.value.copy(queryResult = queryResult))
                     }
                 }
 
             } catch (e: Exception) {
-                queryResult.emit(Result.Failed(e.message ?: "Unknown error"))
+                _uiState.let {
+                    it.emit(it.value.copy(queryResult = AppUiState.Result.Failed(word, e.message ?: "Unknown error")))
+                }
                 return@launch
             } finally {
-                isSearching.emit(false)
+                _uiState.let {
+                    it.emit(it.value.copy(isSearching = false))
+                }
             }
         }
     }
 
-    private suspend fun getDef(word: String) {
+    fun clearResult() {
+        scope.launch {
+            _uiState.let {
+                it.emit(it.value.copy(isSearching = false, queryResult = null))
+            }
+        }
+    }
+
+    private suspend fun getDef(word: String): AppUiState.Result {
+        lateinit var r: AppUiState.Result
         repository.getDefinition(word).take(1).collect { result ->
-            if (result.data != null) {
-                queryResult.emit(Result.Succeed(result.data))
+            r = if (result.data != null) {
+                AppUiState.Result.Succeed(word, result.data)
             } else {
-                queryResult.emit(Result.WordNotFound)
+                AppUiState.Result.WordNotFound(word)
             }
         }
+        return r
     }
-
 }
