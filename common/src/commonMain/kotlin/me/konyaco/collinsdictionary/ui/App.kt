@@ -26,6 +26,7 @@ import me.konyaco.collinsdictionary.ui.component.CobuildDictionarySection
 import me.konyaco.collinsdictionary.ui.component.ColumnWithScrollBar
 import me.konyaco.collinsdictionary.ui.component.SearchBox
 import me.konyaco.collinsdictionary.viewmodel.AppViewModel
+import me.konyaco.collinsdictionary.viewmodel.AppUiState
 
 val LocalScreenSize = compositionLocalOf { ScreenSize.PHONE }
 
@@ -53,14 +54,23 @@ fun ProvideLocalScreenSize(content: @Composable () -> Unit) {
 
 @Composable
 fun App(viewModel: AppViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
     App(
-        viewModel.queryResult.collectAsState().value,
-        viewModel.isSearching.collectAsState().value
-    ) { viewModel.search(it) }
+        uiState.queryResult,
+        uiState.isSearching,
+        uiState.queryResult?.word ?: ""
+    ) {
+        viewModel.search(it)
+    }
 }
 
 @Composable
-fun App(data: AppViewModel.Result?, isSearching: Boolean, onSearch: (text: String) -> Unit) {
+fun App(
+    data: AppUiState.Result?,
+    isSearching: Boolean,
+    searchInput: String,
+    onSearch: (text: String) -> Unit
+) {
     ProvideSoundPlayer {
         ProvideLocalScreenSize {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -78,7 +88,7 @@ fun App(data: AppViewModel.Result?, isSearching: Boolean, onSearch: (text: Strin
                 ) {
                     Banner(display = data == null, padding)
                     Spacer(Modifier.height(32.dp))
-                    var input by remember { mutableStateOf("") }
+                    var input by remember(searchInput) { mutableStateOf(searchInput) }
                     SearchBox(
                         modifier = Modifier.zIndex(2f).padding(horizontal = padding).fillMaxWidth(),
                         value = input,
@@ -95,17 +105,18 @@ fun App(data: AppViewModel.Result?, isSearching: Boolean, onSearch: (text: Strin
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun Result(modifier: Modifier, data: AppViewModel.Result?, contentPadding: Dp) {
+private fun Result(modifier: Modifier, data: AppUiState.Result?, contentPadding: Dp) {
     AnimatedContent(modifier = modifier, targetState = data) { data ->
         when (data) {
-            is AppViewModel.Result.Succeed -> Content(data.data, contentPadding)
-            AppViewModel.Result.WordNotFound -> WordNotFound(
+            is AppUiState.Result.Succeed -> Content(data.data, contentPadding)
+            is AppUiState.Result.WordNotFound -> WordNotFound(
                 Modifier.fillMaxSize().padding(vertical = 32.dp)
             )
-            is AppViewModel.Result.Failed -> ErrorPage(
+            is AppUiState.Result.Failed -> ErrorPage(
                 data.message,
                 Modifier.fillMaxWidth()
             )
+            null -> {}
         }
     }
 }
