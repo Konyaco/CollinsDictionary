@@ -1,1 +1,1 @@
-client for Collins Dictionary
+A third-party client for Collins Dictionary
