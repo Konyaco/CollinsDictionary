@@ -184,7 +184,7 @@ private class PronunciationParser {
     fun parse(dictionaryElement: Element): Pronunciation {
         val pronElement = dictionaryElement.getElementsByClass("mini_h2").firstOrNull()
             ?: error("Cannot find word pronunciation")
-        val pronItem = dictionaryElement.getElementsByClass("pron type-").firstOrNull()
+        val pronItem = dictionaryElement.getElementsByClass("pron").firstOrNull()
         val pronStr = pronItem?.text()
         val soundElement = pronElement.getElementsByAttribute("data-src-mp3").firstOrNull()
         val sound = soundElement?.let {
@@ -193,7 +193,7 @@ private class PronunciationParser {
         if (pronStr == null && soundElement == null) {
             error("Cannot find word pronunciation")
         }
-        return Pronunciation(pronStr ?: "", sound)
+        return Pronunciation(pronStr ?: "[err]", sound)
     }
 }
 
