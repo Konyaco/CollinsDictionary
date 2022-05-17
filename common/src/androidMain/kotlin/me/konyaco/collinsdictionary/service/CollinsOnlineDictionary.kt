@@ -3,7 +3,7 @@ package me.konyaco.collinsdictionary.service
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -29,7 +29,7 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
 
     override suspend fun search(word: String): SearchResult {
         val response = try {
-            client.get<HttpResponse>(buildSearchURL(word))
+            client.get(buildSearchURL(word))
         } catch (e: RedirectResponseException) {
             e.response
         }
@@ -46,7 +46,7 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
                     SearchResult.Redirect(redirectWord)
                 }
             } else {
-                val html = client.get<String>(redirectedUrl) // Get response in [spellcheck]
+                val html = client.get(redirectedUrl).bodyAsText() // Get response in [spellcheck]
                 val list = CollinsSpellCheckParser.parseWordList(html)  // Parse result list
                 SearchResult.NotFound(list)
             }
@@ -71,7 +71,7 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
 
     private suspend fun getHtml(word: String): String {
         // Some words may be redirected to another (like "out" -> "out_1")
-        return clientFollowRedirect.get<String>(buildDictionaryURL(word))
+        return clientFollowRedirect.get(buildDictionaryURL(word)).bodyAsText()
     }
 }
 
