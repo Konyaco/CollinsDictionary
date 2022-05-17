@@ -6,6 +6,10 @@ This is a multi-platform Collins Dictionary client, supports for Desktop(Windows
 
 *For Linux and MacOS, please compile for yourself.*
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="60">](https://f-droid.org/packages/me.konyaco.collinsdictionary/)
+
 UI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
 
 > **Warning:** This program gets word definitions by parsing [Collins Online Dictionary](https://www.collinsdcionary.com) website.
