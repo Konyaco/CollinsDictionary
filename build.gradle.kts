@@ -1,10 +1,10 @@
 plugins {
-    id("com.android.application") version "7.2.0" apply false
-    id("com.android.library") version "7.2.0" apply false
-    kotlin("android") version "1.6.10" apply false
-    kotlin("multiplatform") version "1.6.10" apply false
-    id("org.jetbrains.compose") version "1.1.1" apply false
-    kotlin("plugin.serialization") version "1.6.10" apply false
+    id("com.android.application") version "7.4.0-alpha03" apply false
+    id("com.android.library") version "7.4.0-alpha03" apply false
+    kotlin("android") version "1.6.21" apply false
+    kotlin("multiplatform") version "1.6.21" apply false
+    id("org.jetbrains.compose") version "1.2.0-alpha01-dev686" apply false
+    kotlin("plugin.serialization") version "1.6.21" apply false
 }
 
 allprojects {

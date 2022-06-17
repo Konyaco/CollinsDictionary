@@ -34,7 +34,7 @@ UI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
 - [ ] Support for multiple tab, each tab represents a word, just like a browser.
 - [ ] Every word in the definition is selectable, use middle mouse button to open a new tab.
 - [x] Support for Android.
-- [ ] Pronunciation sound in desktop platform.
+- [x] Pronunciation sound in desktop platform.
 - [ ] Other dictionary section in Collins
   - [ ] American Dictionary
   - [ ] English Dictionary
