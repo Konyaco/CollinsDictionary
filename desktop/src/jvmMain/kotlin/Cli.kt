@@ -53,7 +53,7 @@ fun wordDataToString(definition: CobuildDictionarySection): String {
         definition.definitionEntries.joinToString("\n-------------\n") {
             """
             |${it.index}: [Type] ${it.type}
-            |    [me.konyaco.collinsdictionary.service.Definition] ${it.definition.def}
+            |    [Definition] ${it.definition.def}
             |    ${ // Examples
                 it.definition.examples.takeIf { it.isNotEmpty() }?.let {
                     "[Examples]\n" + it.joinToString("\n") {
