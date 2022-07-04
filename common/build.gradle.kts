@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
+
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -31,8 +33,8 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.appcompat:appcompat:1.4.1")
-                api("androidx.core:core-ktx:1.7.0")
+                api("androidx.appcompat:appcompat:1.4.2")
+                api("androidx.core:core-ktx:1.8.0")
                 api("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation("org.jsoup:jsoup:$jsoupVersion")
             }
@@ -41,6 +43,25 @@ kotlin {
             dependencies {
                 api(compose.desktop.currentOs)
                 api("io.ktor:ktor-client-cio:$ktorVersion")
+                val javaFxVersion = "18.0.1"
+                val name = System.getProperty("os.name").toLowerCaseAsciiOnly()
+                when {
+                    name.contains("win") -> {
+                        implementation("org.openjfx:javafx-base:$javaFxVersion:win")
+                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:win")
+                        implementation("org.openjfx:javafx-media:$javaFxVersion:win")
+                    }
+                    name.contains("mac") -> {
+                        implementation("org.openjfx:javafx-base:$javaFxVersion:mac")
+                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:win")
+                        implementation("org.openjfx:javafx-media:$javaFxVersion:mac")
+                    }
+                    name.contains("linux") ->  {
+                        implementation("org.openjfx:javafx-base:$javaFxVersion:linux")
+                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:win")
+                        implementation("org.openjfx:javafx-media:$javaFxVersion:linux")
+                    }
+                }
                 implementation("org.jsoup:jsoup:$jsoupVersion")
             }
         }
@@ -57,10 +78,11 @@ tasks.withType<Test> {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 32
     }
 }
+
