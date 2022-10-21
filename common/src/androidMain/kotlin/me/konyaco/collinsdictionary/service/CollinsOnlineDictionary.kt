@@ -224,7 +224,7 @@ private class DefinitionParser {
                     sentence,
                     null,
                     null,
-                    emptyList()
+                    null
                 ) // TODO: 2021/7/28 Grammar pattern and sound url.
             }
 

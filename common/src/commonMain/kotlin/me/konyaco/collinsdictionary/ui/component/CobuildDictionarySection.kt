@@ -242,6 +242,12 @@ private fun Definitions(definitionEntries: List<DefinitionEntry>, modifier: Modi
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     entry.definition.examples.forEach { example ->
                         ExampleSentence(example.sentence)
+                        example.synonyms?.let {
+                            Synonyms(
+                                modifier = Modifier.padding(start = 18.dp).fillMaxWidth(),
+                                words = it
+                            )
+                        }
                     }
                 }
             }

@@ -1,8 +1,5 @@
 package me.konyaco.collinsdictionary.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -10,15 +7,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.platform.Font
-
-@Composable
-actual fun MyTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colors = if (isSystemInDarkTheme()) darkColors else lightColors,
-        typography = Typography(defaultFontFamily = RobotoFontFamily),
-        content = content
-    )
-}
 
 actual object MyRes {
     actual val Sound: Painter

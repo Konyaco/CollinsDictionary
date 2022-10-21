@@ -1,6 +1,8 @@
 package me.konyaco.collinsdictionary.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -46,7 +48,13 @@ internal val darkColors = darkColors(
 )
 
 @Composable
-expect fun MyTheme(content: @Composable () -> Unit)
+fun MyTheme(darkMode: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    MaterialTheme(
+        colors = if (darkMode) darkColors else lightColors,
+        typography = Typography(defaultFontFamily = RobotoFontFamily),
+        content = content
+    )
+}
 
 expect object MyRes {
     val Sound: Painter
