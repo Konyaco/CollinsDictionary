@@ -223,8 +223,7 @@ private class DefinitionParser {
                 ExampleSentence(
                     sentence,
                     null,
-                    null,
-                    SynonymParser.parse(senseElement)
+                    null
                 ) // TODO: 2021/7/28 Grammar pattern and sound url.
             }
 
@@ -234,7 +233,8 @@ private class DefinitionParser {
                     type = grammarGroup,
                     definition = Definition(
                         def = def,
-                        examples = examples
+                        examples = examples,
+                        synonyms = SynonymParser.parse(senseElement)
                     ),
                     extraDefinitions = emptyList() // TODO: 2021/7/28 Extra definitions.
                 )

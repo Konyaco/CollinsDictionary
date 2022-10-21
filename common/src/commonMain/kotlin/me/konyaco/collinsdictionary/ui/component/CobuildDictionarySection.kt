@@ -19,10 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import me.konyaco.collinsdictionary.service.CobuildDictionarySection
-import me.konyaco.collinsdictionary.service.DefinitionEntry
-import me.konyaco.collinsdictionary.service.LocalSoundPlayer
-import me.konyaco.collinsdictionary.service.WordForm
+import me.konyaco.collinsdictionary.service.*
 import me.konyaco.collinsdictionary.ui.MyRes
 import me.konyaco.collinsdictionary.ui.SourceSerifProFontFamily
 
@@ -207,51 +204,72 @@ private fun Definitions(definitionEntries: List<DefinitionEntry>, modifier: Modi
         Divider("DEFINITIONS")
         Spacer(Modifier.height(8.dp))
         definitionEntries.forEach { entry ->
-            // Word Type
-            Row {
-                Text(
-                    text = "${entry.index}.",
-                    color = MaterialTheme.colors.primary,
-                    fontSize = 14.sp
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = entry.type.uppercase(),
-                    color = MaterialTheme.colors.onBackground,
-                    fontSize = 14.sp
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Column(Modifier.widthIn(max = with(LocalDensity.current) {
-                // https://material.io/design/typography/understanding-typography.html#readability
-                // According to Material Guidance, 40 - 60 characters width is the best.
-                (16.sp * 50).toDp()
-            })) {
-                // Definition
-                Text(
-                    modifier = Modifier.padding(horizontal = 18.dp),
-                    text = entry.definition.def,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colors.onBackground.copy(0.54f),
-                    textAlign = TextAlign.Justify,
-                    lineHeight = (18.75).sp // TODO: Font Roboto
-                )
-                // Example Sentences
-                Spacer(Modifier.height(4.dp))
+            DefinitionEntry(entry)
+        }
+    }
+}
 
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    entry.definition.examples.forEach { example ->
-                        ExampleSentence(example.sentence)
-                        example.synonyms?.let {
-                            Synonyms(
-                                modifier = Modifier.padding(start = 18.dp).fillMaxWidth(),
-                                words = it
-                            )
-                        }
-                    }
-                }
-            }
-            Spacer(Modifier.height(24.dp))
+@Composable
+private fun DefinitionEntry(entry: DefinitionEntry) {
+    // Word Type
+    WordType(entry)
+
+    Spacer(Modifier.height(8.dp))
+
+    Column(Modifier.widthIn(max = with(LocalDensity.current) {
+        // https://material.io/design/typography/understanding-typography.html#readability
+        // According to Material Guidance, 40 - 60 characters width is the best.
+        (16.sp * 50).toDp()
+    })) {
+        // Definition
+        Text(
+            modifier = Modifier.padding(horizontal = 18.dp),
+            text = entry.definition.def,
+            fontSize = 16.sp,
+            color = MaterialTheme.colors.onBackground.copy(0.54f),
+            textAlign = TextAlign.Justify,
+            lineHeight = (18.75).sp // TODO: Font Roboto
+        )
+        // Example Sentences
+        Spacer(Modifier.height(4.dp))
+
+        ExampleSentences(entry.definition.examples)
+
+        Spacer(Modifier.height(8.dp))
+
+        entry.definition.synonyms?.let {
+            Synonyms(
+                modifier = Modifier.padding(start = 18.dp).fillMaxWidth(),
+                words = it
+            )
+        }
+    }
+    Spacer(Modifier.height(24.dp))
+}
+
+@Composable
+private fun WordType(entry: DefinitionEntry) {
+    Row {
+        Text(
+            text = "${entry.index}.",
+            color = MaterialTheme.colors.primary,
+            fontSize = 14.sp
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = entry.type.uppercase(),
+            color = MaterialTheme.colors.onBackground,
+            fontSize = 14.sp
+        )
+    }
+}
+
+
+@Composable
+private fun ExampleSentences(examples: List<ExampleSentence>) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        examples.forEach { example ->
+            ExampleSentence(example.sentence)
         }
     }
 }

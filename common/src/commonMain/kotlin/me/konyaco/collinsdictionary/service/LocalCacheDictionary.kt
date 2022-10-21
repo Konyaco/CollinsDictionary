@@ -1,5 +1,6 @@
 package me.konyaco.collinsdictionary.service
 
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -21,7 +22,12 @@ class LocalCacheDictionary(private val localStorage: LocalStorage) : CollinsDict
 
     override suspend fun getDefinition(word: String): Word? {
         val text = localStorage.getDefinition(word) ?: return null
-        return json.decodeFromString<Word>(text)
+        return try {
+            json.decodeFromString<Word>(text)
+        } catch (e: SerializationException) {
+            localStorage.deleteDefinition(word)
+            null
+        }
     }
 
     fun cacheSearchResult(word: String, searchResult: SearchResult) {
