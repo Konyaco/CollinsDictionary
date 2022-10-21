@@ -1,4 +1,3 @@
-import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -26,6 +25,8 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "MainKt"
+        jvmArgs.add("-Xms8m")
+        jvmArgs.add("-Xmx128m")
         nativeDistributions {
             targetFormats(TargetFormat.Exe, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "CollinsDictionary"

@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     defaultConfig {
         applicationId = "me.konyaco.collinsdictionary"
         minSdk = 21
-        targetSdk = 32
-        versionCode = 8
-        versionName = "1.4.5"
+        targetSdk = 33
+        versionCode = 9
+        versionName = "1.4.6"
     }
 
     buildTypes {
@@ -43,14 +43,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    namespace = "me.konyaco.collinsdictionary"
 }
 
 dependencies {
     implementation(project(":common"))
     implementation("org.jsoup:jsoup:${rootProject.extra["jsoup_version"]}")
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.activity:activity-compose:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.5.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
 }

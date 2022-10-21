@@ -5,3 +5,6 @@
 /common/build/
 /android/build/
 /desktop/build/
+/local.properties
+/desktop/cache/
+/gradle/.DS_Store

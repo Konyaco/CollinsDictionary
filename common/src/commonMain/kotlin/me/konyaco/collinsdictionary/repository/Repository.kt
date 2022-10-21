@@ -25,6 +25,9 @@ class Repository(
         when (localResult) {
             is SearchResult.PreciseWord -> emit(Result(Result.Source.LOCAL, localResult))
             is SearchResult.Redirect -> emit(Result(Result.Source.LOCAL, localResult))
+            else -> {
+                // TODO:
+            }
         }
         val remoteResult = onlineDictionary.search(word)
         localCacheDictionary.cacheSearchResult(word, remoteResult)

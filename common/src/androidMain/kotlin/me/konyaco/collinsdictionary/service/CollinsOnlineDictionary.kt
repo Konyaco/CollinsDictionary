@@ -223,8 +223,7 @@ private class DefinitionParser {
                 ExampleSentence(
                     sentence,
                     null,
-                    null,
-                    emptyList()
+                    null
                 ) // TODO: 2021/7/28 Grammar pattern and sound url.
             }
 
@@ -234,7 +233,8 @@ private class DefinitionParser {
                     type = grammarGroup,
                     definition = Definition(
                         def = def,
-                        examples = examples
+                        examples = examples,
+                        synonyms = SynonymParser.parse(senseElement)
                     ),
                     extraDefinitions = emptyList() // TODO: 2021/7/28 Extra definitions.
                 )
@@ -242,5 +242,18 @@ private class DefinitionParser {
         }
 
         return definitionEntries
+    }
+}
+
+private object SynonymParser {
+    fun parse(synonymElement: Element): List<String>? {
+        val result = mutableListOf<String>()
+        val thesElement = synonymElement.getElementsByClass("thes").first()
+            ?: return null
+
+        thesElement.getElementsByClass("form ref").forEach { //
+            result.add(it.text())
+        }
+        return result
     }
 }

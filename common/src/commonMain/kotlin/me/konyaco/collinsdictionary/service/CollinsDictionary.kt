@@ -57,13 +57,13 @@ data class DefinitionEntry(
 @Serializable
 data class Definition(
     val def: String,
-    val examples: List<ExampleSentence>
+    val examples: List<ExampleSentence>,
+    val synonyms: List<String>?
 )
 
 @Serializable
 data class ExampleSentence(
     val sentence: String,
     val grammarPattern: String?,
-    val soundUrl: String?,
-    val synonyms: List<String>?
+    val soundUrl: String?
 )
