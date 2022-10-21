@@ -20,17 +20,15 @@ fun Synonyms(
 ) {
     Surface(
         modifier = modifier.wrapContentHeight(),
-        color = if (MaterialTheme.colors.isLight) Color.Transparent
-        else Color(0xFF424242),
+        color = Color.Transparent,
         contentColor = MaterialTheme.colors.onSurface,
-        border = if (MaterialTheme.colors.isLight) BorderStroke(
+        border = BorderStroke(
             1.dp,
             MaterialTheme.colors.onSurface.copy(0.12f)
         )
-        else null
     ) {
         Box(Modifier.wrapContentHeight()) {
-            Column(Modifier.padding(14.dp)) {
+            Column(Modifier.padding(14.dp, 10.dp, 14.dp, 14.dp)) {
                 Text(
                     text = "SYNONYMS",
                     fontSize = 14.sp
