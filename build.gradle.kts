@@ -1,10 +1,10 @@
 plugins {
-    id("com.android.application") version "7.4.0-alpha03" apply false
-    id("com.android.library") version "7.4.0-alpha03" apply false
-    kotlin("android") version "1.6.21" apply false
-    kotlin("multiplatform") version "1.6.21" apply false
-    id("org.jetbrains.compose") version "1.2.0-alpha01-dev686" apply false
-    kotlin("plugin.serialization") version "1.6.21" apply false
+    id("com.android.application") version "7.3.0" apply false
+    id("com.android.library") version "7.3.0" apply false
+    kotlin("android") version "1.7.20" apply false
+    kotlin("multiplatform") version "1.7.20" apply false
+    id("org.jetbrains.compose") version "1.2.0" apply false
+    kotlin("plugin.serialization") version "1.7.20" apply false
 }
 
 allprojects {
@@ -13,10 +13,10 @@ allprojects {
         google()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
-    extra["jsoup_version"] = "1.15.1"
-    extra["serialization_version"] = "1.3.3"
-    extra["coroutines_version"] = "1.6.1"
-    extra["ktor_version"] = "2.0.1"
+    extra["jsoup_version"] = "1.15.3"
+    extra["serialization_version"] = "1.4.1"
+    extra["coroutines_version"] = "1.6.4"
+    extra["ktor_version"] = "2.1.2"
 }
 
 group = "me.konyaco.collinsdictionary"
