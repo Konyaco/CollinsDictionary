@@ -224,7 +224,7 @@ private class DefinitionParser {
                     sentence,
                     null,
                     null,
-                    null
+                    SynonymParser.parse(senseElement)
                 ) // TODO: 2021/7/28 Grammar pattern and sound url.
             }
 
@@ -242,5 +242,18 @@ private class DefinitionParser {
         }
 
         return definitionEntries
+    }
+}
+
+private object SynonymParser {
+    fun parse(synonymElement: Element): List<String>? {
+        val result = mutableListOf<String>()
+        val thesElement = synonymElement.getElementsByClass("thes").first()
+            ?: return null
+
+        thesElement.getElementsByClass("form ref").forEach { //
+            result.add(it.text())
+        }
+        return result
     }
 }
