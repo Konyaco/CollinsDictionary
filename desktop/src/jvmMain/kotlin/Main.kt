@@ -13,6 +13,7 @@ import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 import java.io.File
 
 suspend fun main(args: Array<String>) {
+    System.setProperty("java.net.useSystemProxies", "true")
     if (args.getOrNull(0) == "cli") cli()
     else gui()
 }

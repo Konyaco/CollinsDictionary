@@ -8,11 +8,25 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import java.net.ProxySelector
+import java.net.URI
 import java.util.*
 
 actual class CollinsOnlineDictionary : CollinsDictionary {
-    private val client = HttpClient(CIO) { followRedirects = false }
-    private val clientFollowRedirect = HttpClient(CIO)
+    private val client = HttpClient(CIO) {
+        config()
+        followRedirects = false
+    }
+    private val clientFollowRedirect = HttpClient(CIO) { config() }
+
+    private fun HttpClientConfig<*>.config() {
+        engine {
+            val proxy =
+                ProxySelector.getDefault().select(URI("https://www.collinsdictionary.com"))
+                    .firstOrNull()
+            this.proxy = proxy
+        }
+    }
 
     companion object {
         private const val SEARCH_URL = "https://www.collinsdictionary.com/search"
