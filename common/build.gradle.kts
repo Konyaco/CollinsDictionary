@@ -33,8 +33,8 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.appcompat:appcompat:1.4.2")
-                api("androidx.core:core-ktx:1.8.0")
+                api("androidx.appcompat:appcompat:1.5.1")
+                api("androidx.core:core-ktx:1.9.0")
                 api("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation("org.jsoup:jsoup:$jsoupVersion")
             }
@@ -53,12 +53,12 @@ kotlin {
                     }
                     name.contains("mac") -> {
                         implementation("org.openjfx:javafx-base:$javaFxVersion:mac")
-                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:win")
+                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:mac")
                         implementation("org.openjfx:javafx-media:$javaFxVersion:mac")
                     }
                     name.contains("linux") ->  {
                         implementation("org.openjfx:javafx-base:$javaFxVersion:linux")
-                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:win")
+                        implementation("org.openjfx:javafx-graphics:$javaFxVersion:linux")
                         implementation("org.openjfx:javafx-media:$javaFxVersion:linux")
                     }
                 }
