@@ -239,7 +239,7 @@ private fun DefinitionEntry(entry: DefinitionEntry) {
 
         entry.definition.synonyms?.let {
             Synonyms(
-                modifier = Modifier.padding(start = 18.dp).fillMaxWidth(),
+                modifier = Modifier.padding(horizontal = 18.dp).fillMaxWidth(),
                 words = it
             )
         }

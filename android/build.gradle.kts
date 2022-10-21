@@ -10,8 +10,8 @@ android {
         applicationId = "me.konyaco.collinsdictionary"
         minSdk = 21
         targetSdk = 33
-        versionCode = 8
-        versionName = "1.4.5"
+        versionCode = 9
+        versionName = "1.4.6"
     }
 
     buildTypes {

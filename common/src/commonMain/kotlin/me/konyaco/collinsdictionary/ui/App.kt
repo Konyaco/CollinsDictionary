@@ -1,6 +1,7 @@
 package me.konyaco.collinsdictionary.ui
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -74,12 +75,12 @@ fun App(
     ProvideSoundPlayer {
         ProvideLocalScreenSize {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                val padding = when (LocalScreenSize.current) {
+                val padding by animateDpAsState(when (LocalScreenSize.current) {
                     ScreenSize.PHONE -> 16.dp
                     ScreenSize.TABLET -> 24.dp
                     ScreenSize.LAPTOP -> 48.dp
                     ScreenSize.DESKTOP -> 48.dp
-                }
+                })
 
                 Column(
                     modifier = Modifier.fillMaxSize(),
