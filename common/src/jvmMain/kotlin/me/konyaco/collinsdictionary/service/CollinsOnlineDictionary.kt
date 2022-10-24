@@ -1,6 +1,7 @@
 package me.konyaco.collinsdictionary.service
 
 import io.ktor.client.*
+import io.ktor.client.engine.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
@@ -24,7 +25,9 @@ actual class CollinsOnlineDictionary : CollinsDictionary {
             val proxy =
                 ProxySelector.getDefault().select(URI("https://www.collinsdictionary.com"))
                     .firstOrNull()
-            this.proxy = proxy
+            if (proxy != null && proxy.type != ProxyType.UNKNOWN) {
+                this.proxy = proxy
+            }
         }
     }
 
