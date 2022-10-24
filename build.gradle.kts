@@ -17,6 +17,7 @@ allprojects {
     extra["serialization_version"] = "1.4.1"
     extra["coroutines_version"] = "1.6.4"
     extra["ktor_version"] = "2.1.2"
+    extra["koin_version"] = "3.2.2"
 }
 
 group = "me.konyaco.collinsdictionary"

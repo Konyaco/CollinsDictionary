@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import me.konyaco.collinsdictionary.repository.Repository
 import me.konyaco.collinsdictionary.service.SearchResult
 import me.konyaco.collinsdictionary.service.Word
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 data class AppUiState(
     val isSearching: Boolean,
@@ -22,7 +24,8 @@ data class AppUiState(
     }
 }
 
-class AppViewModel(private val repository: Repository) {
+class AppViewModel: KoinComponent {
+    private val repository: Repository by inject()
     private val _uiState = MutableStateFlow<AppUiState>(AppUiState(false, null))
     val uiState = _uiState.asStateFlow()
 
