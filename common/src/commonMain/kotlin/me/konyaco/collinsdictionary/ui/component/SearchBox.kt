@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -55,7 +56,6 @@ fun SearchBox(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     ),
-                    maxLines = 1,
                     decorationBox = {
                         Box(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -66,7 +66,19 @@ fun SearchBox(
                                 "Search...",
                                 fontSize = 16.sp,
                                 color = myColors.onSearchBox.copy(0.6f)
-                            )
+                            ) else IconButton(
+                                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 32.dp),
+                                onClick = {
+                                    onValueChange("")
+                                },
+                                enabled = !isSearching
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    "Clear",
+                                    tint = myColors.onSearchBox.copy(LocalContentAlpha.current)
+                                )
+                            }
                         }
                     }
                 )
