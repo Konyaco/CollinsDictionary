@@ -4,19 +4,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import me.konyaco.collinsdictionary.commonModule
+import me.konyaco.collinsdictionary.store.FileBasedLocalStorage
+import me.konyaco.collinsdictionary.store.LocalStorage
 import me.konyaco.collinsdictionary.ui.App
 import me.konyaco.collinsdictionary.ui.MyTheme
 import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 import org.koin.core.context.startKoin
+import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent
+import java.io.File
 
 suspend fun main(args: Array<String>) {
-    startKoin {
-        modules(commonModule)
-    }
     System.setProperty("java.net.useSystemProxies", "true")
+    initKoin()
     if (args.getOrNull(0) == "cli") cli()
     else gui()
+}
+
+private fun initKoin() {
+    startKoin {
+        modules(
+            commonModule,
+            module {
+                single<LocalStorage> {
+                    FileBasedLocalStorage(File("cache").also {
+                        if (!it.exists()) it.mkdir()
+                    })
+                }
+            }
+        )
+    }
 }
 
 fun gui() {
