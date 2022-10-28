@@ -12,10 +12,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -36,8 +38,9 @@ fun SearchBox(
     Box(modifier.fillMaxWidth()) {
         Surface(Modifier.fillMaxWidth().wrapContentHeight(), color = myColors.searchBoxBackground) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
+                val focusRequester = remember { FocusRequester() }
                 BasicTextField(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.matchParentSize().focusRequester(focusRequester),
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = true,
@@ -49,7 +52,7 @@ fun SearchBox(
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,
                         keyboardType = KeyboardType.Ascii,
-                        imeAction = ImeAction.Search
+                        imeAction = ImeAction.Done
                     ),
                     textStyle = TextStyle(
                         color = myColors.onSearchBox.copy(0.6f),
@@ -70,6 +73,7 @@ fun SearchBox(
                                 modifier = Modifier.align(Alignment.CenterEnd).padding(end = 32.dp),
                                 onClick = {
                                     onValueChange("")
+                                    focusRequester.requestFocus()
                                 },
                                 enabled = !isSearching
                             ) {
@@ -83,11 +87,10 @@ fun SearchBox(
                     }
                 )
 
-                val focusManager = LocalFocusManager.current
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
-                        focusManager.clearFocus()
+                        focusRequester.freeFocus()
                         onSearchClick()
                     },
                     enabled = !isSearching && value.isNotBlank()
