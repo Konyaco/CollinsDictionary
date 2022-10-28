@@ -95,7 +95,11 @@ fun App(
                         modifier = Modifier.zIndex(2f).padding(horizontal = padding).fillMaxWidth(),
                         value = input,
                         onValueChange = { input = it },
-                        onSearchClick = { onSearch(input) },
+                        onSearchClick = {
+                            val trim = input.trim()
+                            input = trim
+                            onSearch(trim)
+                        },
                         isSearching = isSearching
                     )
                     Result(Modifier.zIndex(1f).weight(1f).fillMaxWidth(), data, padding)
