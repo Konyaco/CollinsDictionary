@@ -66,7 +66,7 @@ fun SearchBox(
                         imeAction = ImeAction.Search
                     ),
                     textStyle = TextStyle(
-                        color = myColors.onSearchBox.copy(0.6f),
+                        color = myColors.onSearchBox.copy(LocalContentAlpha.current),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     ),

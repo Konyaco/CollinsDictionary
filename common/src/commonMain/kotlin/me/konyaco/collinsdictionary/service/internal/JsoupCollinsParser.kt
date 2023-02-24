@@ -1,83 +1,13 @@
-// This file is copied from jvmMain source.
-package me.konyaco.collinsdictionary.service
+package me.konyaco.collinsdictionary.service.internal
 
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import me.konyaco.collinsdictionary.service.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.util.*
 
-actual class CollinsOnlineDictionary : CollinsDictionary {
-    private val client = HttpClient(CIO) { followRedirects = false }
-    private val clientFollowRedirect = HttpClient(CIO)
-
-    companion object {
-        private const val SEARCH_URL = "https://www.collinsdictionary.com/search"
-        private const val SPELL_CHECK_URL = "https://www.collinsdictionary.com/spellcheck/english"
-        private const val DICTIONARY_URL = "https://www.collinsdictionary.com/dictionary/english"
-        private fun buildSearchURL(word: String) = "$SEARCH_URL/?dictCode=english&q=$word"
-        private fun buildDictionaryURL(word: String) = "$DICTIONARY_URL/$word"
-    }
-
-    override suspend fun getDefinition(word: String): Word? {
-        return CollinsDictionaryHTMLParser.parse(getHtml(word))
-    }
-
-    override suspend fun search(word: String): SearchResult {
-        val response = try {
-            client.get(buildSearchURL(word))
-        } catch (e: RedirectResponseException) {
-            e.response
-        }
-
-        if (response.status == HttpStatusCode.Found) {
-            val redirectedUrl =
-                response.headers[HttpHeaders.Location] ?: error("Redirect to header was not found.")
-
-            return if (isPrecise(redirectedUrl)) {
-                val redirectWord = getRedirectedWord(redirectedUrl)
-                if (redirectWord == word) {
-                    SearchResult.PreciseWord(redirectWord)
-                } else {
-                    SearchResult.Redirect(redirectWord)
-                }
-            } else {
-                val html = client.get(redirectedUrl).bodyAsText() // Get response in [spellcheck]
-                val list = CollinsSpellCheckParser.parseWordList(html)  // Parse result list
-                SearchResult.NotFound(list)
-            }
-        } else {
-            error("Response code is: ${response.status}")
-        }
-    }
-
-    /**
-     * If the search result redirects to a precise page. Or to a spellcheck page.
-     */
-    private fun isPrecise(redirectedUrl: String): Boolean {
-        return when {
-            redirectedUrl.startsWith(DICTIONARY_URL) -> true
-            redirectedUrl.startsWith(SPELL_CHECK_URL) -> false
-            else -> error("Could not search word.")
-        }
-    }
-
-    private fun getRedirectedWord(redirectedUrl: String): String =
-        redirectedUrl.substringAfterLast("/")
-
-    private suspend fun getHtml(word: String): String {
-        // Some words may be redirected to another (like "out" -> "out_1")
-        return clientFollowRedirect.get(buildDictionaryURL(word)).bodyAsText()
-    }
-}
-
-private object CollinsSpellCheckParser {
-    fun parseWordList(html: String): List<String> {
-        val jsoup = Jsoup.parse(html)
+internal class JsoupCollinsParser {
+    fun parseAlternatives(alternativeHtml: String): List<String> {
+        val jsoup = Jsoup.parse(alternativeHtml)
         val mainContentElement = jsoup.getElementById("main_content")
             ?: error("Could not parse word list: main_content not found.")
         val column = mainContentElement.getElementsByClass("columns2")
@@ -87,18 +17,16 @@ private object CollinsSpellCheckParser {
         }
         return result
     }
-}
 
-private object CollinsDictionaryHTMLParser {
-    fun parse(html: String): Word? {
-        val jsoup = Jsoup.parse(html)
+    fun parseContent(htmlContent: String): Word? {
+        val jsoup = Jsoup.parse(htmlContent)
         val mainContentElement =
             jsoup.getElementById("main_content") ?: return null // Word not found
 
         return Word(parseCobuildDictionary(mainContentElement))
     }
 
-    fun parseCobuildDictionary(mainContentElement: Element): CobuildDictionary {
+    private fun parseCobuildDictionary(mainContentElement: Element): CobuildDictionary {
         return run {
             val cobuildElement =
                 mainContentElement.getElementsByClass("dictionary Cob_Adv_Brit dictentry")
@@ -117,48 +45,17 @@ private object CollinsDictionaryHTMLParser {
         }
     }
 
-    fun parseSection(dictionaryElement: Element): CobuildDictionarySection {
-        val wordName = WordNameParser().parse(dictionaryElement)
-        val wordFrequency = WordFrequencyParser().parse(dictionaryElement)
-        val wordForms: List<WordForm>? = WordFormParser().parse(dictionaryElement)
-        val pronunciation = PronunciationParser().parse(dictionaryElement)
-        val definitionEntries = DefinitionParser().parse(dictionaryElement)
-
+    private fun parseSection(dictionaryElement: Element): CobuildDictionarySection {
         return CobuildDictionarySection(
-            word = wordName,
-            frequency = wordFrequency,
-            forms = wordForms,
-            pronunciation = pronunciation,
-            definitionEntries = definitionEntries
+            word = parseWordName(dictionaryElement),
+            frequency = parseWordFrequency(dictionaryElement),
+            forms = parseWordForms(dictionaryElement),
+            pronunciation = parsePronunciation(dictionaryElement),
+            definitionEntries = parseDefinition(dictionaryElement)
         )
     }
-}
 
-private class WordFrequencyParser {
-    fun parse(dictionaryElement: Element): Int? {
-        return dictionaryElement.getElementsByClass("word-frequency-img")
-            .firstOrNull()
-            ?.attributes()
-            ?.get("data-band")
-            ?.toInt()
-    }
-}
-
-private class WordNameParser {
-    fun parse(dictionaryElement: Element): String {
-        return dictionaryElement.getElementsByClass("title_container")
-            .firstOrNull()
-            ?.getElementsByTag("h2")
-            ?.lastOrNull()
-            ?.getElementsByTag("span")
-            ?.firstOrNull()
-            ?.text()
-            ?: error("Cannot find word name")
-    }
-}
-
-private class WordFormParser {
-    fun parse(dictionaryElement: Element): List<WordForm>? {
+    private fun parseWordForms(dictionaryElement: Element): List<WordForm>? {
         val formElement = dictionaryElement.getElementsByClass("form inflected_forms type-infl")
             .firstOrNull() ?: return null
         val result = mutableListOf<WordForm>()
@@ -179,10 +76,27 @@ private class WordFormParser {
         }
         return result
     }
-}
 
-private class PronunciationParser {
-    fun parse(dictionaryElement: Element): Pronunciation {
+    private fun parseWordName(dictionaryElement: Element): String {
+        return dictionaryElement.getElementsByClass("title_container")
+            .firstOrNull()
+            ?.getElementsByTag("h2")
+            ?.lastOrNull()
+            ?.getElementsByTag("span")
+            ?.firstOrNull()
+            ?.text()
+            ?: error("Cannot find word name")
+    }
+
+    private fun parseWordFrequency(dictionaryElement: Element): Int? {
+        return dictionaryElement.getElementsByClass("word-frequency-img")
+            .firstOrNull()
+            ?.attributes()
+            ?.get("data-band")
+            ?.toInt()
+    }
+
+    private fun parsePronunciation(dictionaryElement: Element): Pronunciation {
         val pronElement = dictionaryElement.getElementsByClass("mini_h2").firstOrNull()
             ?: error("Cannot find word pronunciation")
         val pronItem = dictionaryElement.getElementsByClass("pron").firstOrNull()
@@ -196,10 +110,8 @@ private class PronunciationParser {
         }
         return Pronunciation(pronStr ?: "[err]", sound)
     }
-}
 
-private class DefinitionParser {
-    fun parse(dictionaryElement: Element): List<DefinitionEntry> {
+    private fun parseDefinition(dictionaryElement: Element): List<DefinitionEntry> {
         val definitionEntries = mutableListOf<DefinitionEntry>()
 
         val definitionElement =
@@ -234,7 +146,7 @@ private class DefinitionParser {
                     definition = Definition(
                         def = def,
                         examples = examples,
-                        synonyms = SynonymParser.parse(senseElement)
+                        synonyms = parseSynonyms(senseElement)
                     ),
                     extraDefinitions = emptyList() // TODO: 2021/7/28 Extra definitions.
                 )
@@ -243,10 +155,8 @@ private class DefinitionParser {
 
         return definitionEntries
     }
-}
 
-private object SynonymParser {
-    fun parse(synonymElement: Element): List<String>? {
+    private fun parseSynonyms(synonymElement: Element): List<String>? {
         val result = mutableListOf<String>()
         val thesElement = synonymElement.getElementsByClass("thes").first()
             ?: return null
