@@ -16,6 +16,7 @@ kotlin {
         val serializationVersion = extra["serialization_version"]
         val jsoupVersion = extra["jsoup_version"]
         val coroutinesVersion = extra["coroutines_version"]
+        val koinVersion = extra["koin_version"]
 
         val commonMain by getting {
             dependencies {
@@ -29,16 +30,19 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 api("io.ktor:ktor-client-cio:$ktorVersion")
+                api("io.insert-koin:koin-core:$koinVersion")
+//                implementation("io.insert-koin:koin-androidx-compose:$koinVersion")
             }
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.appcompat:appcompat:1.5.1")
+                api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.9.0")
                 api("io.ktor:ktor-client-cio:$ktorVersion")
                 implementation("org.jsoup:jsoup:$jsoupVersion")
             }
         }
+
         val jvmMain by getting {
             dependencies {
                 api(compose.desktop.currentOs)

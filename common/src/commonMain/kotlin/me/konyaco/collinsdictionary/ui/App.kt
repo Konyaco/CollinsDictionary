@@ -28,6 +28,7 @@ import me.konyaco.collinsdictionary.ui.component.ColumnWithScrollBar
 import me.konyaco.collinsdictionary.ui.component.SearchBox
 import me.konyaco.collinsdictionary.viewmodel.AppViewModel
 import me.konyaco.collinsdictionary.viewmodel.AppUiState
+import org.koin.java.KoinJavaComponent
 
 val LocalScreenSize = compositionLocalOf { ScreenSize.PHONE }
 
@@ -54,7 +55,7 @@ fun ProvideLocalScreenSize(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun App(viewModel: AppViewModel) {
+fun App(viewModel: AppViewModel = remember { KoinJavaComponent.getKoin().get() }) {
     val uiState by viewModel.uiState.collectAsState()
     App(
         uiState.queryResult,
@@ -94,7 +95,11 @@ fun App(
                         modifier = Modifier.zIndex(2f).padding(horizontal = padding).fillMaxWidth(),
                         value = input,
                         onValueChange = { input = it },
-                        onSearchClick = { onSearch(input) },
+                        onSearchClick = {
+                            val trim = input.trim()
+                            input = trim
+                            onSearch(trim)
+                        },
                         isSearching = isSearching
                     )
                     Result(Modifier.zIndex(1f).weight(1f).fillMaxWidth(), data, padding)

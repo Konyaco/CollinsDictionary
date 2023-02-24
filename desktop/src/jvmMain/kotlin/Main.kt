@@ -3,36 +3,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import me.konyaco.collinsdictionary.repository.Repository
-import me.konyaco.collinsdictionary.service.CollinsOnlineDictionary
-import me.konyaco.collinsdictionary.service.LocalCacheDictionary
+import me.konyaco.collinsdictionary.commonModule
 import me.konyaco.collinsdictionary.store.FileBasedLocalStorage
+import me.konyaco.collinsdictionary.store.LocalStorage
 import me.konyaco.collinsdictionary.ui.App
 import me.konyaco.collinsdictionary.ui.MyTheme
 import me.konyaco.collinsdictionary.viewmodel.AppViewModel
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent
 import java.io.File
 
 suspend fun main(args: Array<String>) {
     System.setProperty("java.net.useSystemProxies", "true")
+    initKoin()
     if (args.getOrNull(0) == "cli") cli()
     else gui()
 }
 
-fun Repository(): Repository {
-    return Repository(
-        CollinsOnlineDictionary(),
-        LocalCacheDictionary(
-            FileBasedLocalStorage(
-                File("cache").also {
-                    if (!it.exists()) it.mkdir()
+private fun initKoin() {
+    startKoin {
+        modules(
+            commonModule,
+            module {
+                single<LocalStorage> {
+                    FileBasedLocalStorage(File("cache").also {
+                        if (!it.exists()) it.mkdir()
+                    })
                 }
-            )
+            }
         )
-    )
+    }
 }
 
 fun gui() {
-    val viewModel = AppViewModel(Repository())
+    val viewModel by KoinJavaComponent.getKoin().inject<AppViewModel>()
     application {
         val icon = painterResource("icon.png")
         var display by remember { mutableStateOf(true) }

@@ -6,11 +6,13 @@ import me.konyaco.collinsdictionary.service.CollinsOnlineDictionary
 import me.konyaco.collinsdictionary.service.LocalCacheDictionary
 import me.konyaco.collinsdictionary.service.SearchResult
 import me.konyaco.collinsdictionary.service.Word
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class Repository(
-    private val onlineDictionary: CollinsOnlineDictionary,
-    private val localCacheDictionary: LocalCacheDictionary
-) {
+class Repository : KoinComponent {
+    private val onlineDictionary: CollinsOnlineDictionary by inject()
+    private val localCacheDictionary: LocalCacheDictionary by inject()
+
     data class Result<out T>(
         val source: Source,
         val data: T

@@ -1,24 +1,29 @@
 package me.konyaco.collinsdictionary
 
 import android.app.Application
-import me.konyaco.collinsdictionary.repository.Repository
-import me.konyaco.collinsdictionary.service.CollinsOnlineDictionary
-import me.konyaco.collinsdictionary.service.LocalCacheDictionary
 import me.konyaco.collinsdictionary.store.FileBasedLocalStorage
-import me.konyaco.collinsdictionary.viewmodel.AppViewModel
+import me.konyaco.collinsdictionary.store.LocalStorage
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
 
 class MyApplication : Application() {
-    lateinit var repository: Repository
-    lateinit var viewModel: AppViewModel
-
     override fun onCreate() {
         super.onCreate()
-        repository = Repository(
-            CollinsOnlineDictionary(),
-            LocalCacheDictionary(FileBasedLocalStorage(filesDir.resolve("cache").also {
-                if (!it.exists()) it.mkdir()
-            }))
-        )
-        viewModel = AppViewModel(repository)
+        initKoin()
+    }
+
+    private fun initKoin() {
+        startKoin {
+            modules(
+                commonModule,
+                module {
+                    single<LocalStorage> {
+                        FileBasedLocalStorage(filesDir.resolve("cache").also {
+                            if (!it.exists()) it.mkdir()
+                        })
+                    }
+                }
+            )
+        }
     }
 }

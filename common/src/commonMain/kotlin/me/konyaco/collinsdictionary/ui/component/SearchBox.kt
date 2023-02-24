@@ -9,10 +9,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
@@ -23,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.konyaco.collinsdictionary.ui.myColors
+import me.konyaco.collinsdictionary.ui.util.onEnterPress
 
 @Composable
 fun SearchBox(
@@ -35,15 +40,25 @@ fun SearchBox(
     Box(modifier.fillMaxWidth()) {
         Surface(Modifier.fillMaxWidth().wrapContentHeight(), color = myColors.searchBoxBackground) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
+                val focusManager = LocalFocusManager.current
+                val focusRequester = remember { FocusRequester() }
                 BasicTextField(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.matchParentSize()
+                        .onEnterPress {
+                            focusManager.clearFocus(true)
+                            onSearchClick()
+                        }
+                        .focusRequester(focusRequester),
                     value = value,
                     onValueChange = onValueChange,
+                    enabled = !isSearching,
                     singleLine = true,
                     cursorBrush = SolidColor(MaterialTheme.colors.primary),
                     keyboardActions = KeyboardActions(
-                        onDone = { onSearchClick() },
-                        onSearch = { onSearchClick() }
+                        onSearch = {
+                            focusManager.clearFocus(true)
+                            onSearchClick()
+                        }
                     ),
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,
@@ -51,11 +66,10 @@ fun SearchBox(
                         imeAction = ImeAction.Search
                     ),
                     textStyle = TextStyle(
-                        color = myColors.onSearchBox.copy(0.6f),
+                        color = myColors.onSearchBox.copy(LocalContentAlpha.current),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal
                     ),
-                    maxLines = 1,
                     decorationBox = {
                         Box(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -66,16 +80,28 @@ fun SearchBox(
                                 "Search...",
                                 fontSize = 16.sp,
                                 color = myColors.onSearchBox.copy(0.6f)
-                            )
+                            ) else IconButton(
+                                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 32.dp),
+                                onClick = {
+                                    onValueChange("")
+                                    focusRequester.requestFocus()
+                                },
+                                enabled = !isSearching
+                            ) {
+                                Icon(
+                                    Icons.Filled.Close,
+                                    "Clear",
+                                    tint = myColors.onSearchBox.copy(LocalContentAlpha.current)
+                                )
+                            }
                         }
                     }
                 )
 
-                val focusManager = LocalFocusManager.current
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
-                        focusManager.clearFocus()
+                        focusManager.clearFocus(true)
                         onSearchClick()
                     },
                     enabled = !isSearching && value.isNotBlank()
