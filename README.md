@@ -39,6 +39,7 @@ UI is built on [Jetbrains Compose](https://github.com/JetBrains/compose-jb).
   - [ ] American Dictionary
   - [ ] English Dictionary
 - [ ] Synonyms and antonyms
+- [ ] Derivative words
 - [ ] Some words have comments in COBUILD.
 - [ ] Daily word
   - [ ] Widget
